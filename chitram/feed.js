@@ -1,15 +1,4 @@
-// import feed from "../../../feed";
-import React, { useState } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import Post from "./Post";
-
-const feed = [
+export const feed = [
   {
     title: "The Last Sunset",
     body: "A drama about a young woman returning to her small town to reconcile with her estranged father before he passes away. The story explores themes of family, regret, and forgiveness.",
@@ -268,38 +257,3 @@ const feed = [
     ],
   },
 ];
-
-const HomeScreen = () => {
-  const [showAllReplies, setShowAllReplies] = useState(false);
-
-  const handleToggleReplies = () => {
-    setShowAllReplies((prevState) => !prevState);
-  };
-
-  const renderItem = ({ item }) => {
-    return (
-      <Post
-        item={item}
-        showAllReplies={showAllReplies}
-        handleToggleReplies={handleToggleReplies}
-      />
-    );
-  };
-
-  return (
-    <FlatList
-      data={feed}
-      renderItem={renderItem}
-      keyExtractor={(item, index) => index.toString()}
-      contentContainerStyle={styles.container}
-    />
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-  },
-});
-
-export default HomeScreen;

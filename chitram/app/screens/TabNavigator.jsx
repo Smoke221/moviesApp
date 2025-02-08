@@ -46,7 +46,7 @@ const TabNavigator = () => {
     headerTitle: () => (
       <Text
         style={{
-          color: "red",
+          color: "#e63946",
           fontSize: 32,
           fontWeight: "700",
           fontFamily: "cursive",
@@ -63,7 +63,7 @@ const TabNavigator = () => {
           source={{
             uri: `https://www.gravatar.com/avatar/749c3e6ccdb52132b8ee9dad27b61c22?d=https://ui-avatars.com/api/John+Doe/128/random`,
           }}
-          style={{ width: 30, height: 30, borderRadius: 15, marginLeft: 10 }}
+          style={{ width: 40, height: 40, borderRadius: 20, marginLeft: 10 }}
         />
       </TouchableOpacity>
     ),
@@ -108,7 +108,7 @@ const TabNavigator = () => {
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: "red",
+          tabBarActiveTintColor: "#e63946",
           tabBarInactiveTintColor: "gray",
         }}
       >

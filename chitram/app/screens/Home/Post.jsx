@@ -104,8 +104,8 @@ const styles = StyleSheet.create({
   },
   postedBy: {
     fontSize: 14,
-    fontWeight: "bold",
-    color: "#555",
+    // fontWeight: "bold",
+    color: "gray",
     marginBottom: 3,
   },
   title: {
@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
     color: "#777",
   },
   commentText: {
+    marginTop: 10,
     fontSize: 12,
     color: "#555",
     fontWeight: "500",

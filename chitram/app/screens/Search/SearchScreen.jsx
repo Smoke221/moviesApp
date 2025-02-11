@@ -1,34 +1,148 @@
-import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import axios from 'axios';
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
+  ActivityIndicator,
+  Dimensions,
   FlatList,
   Image,
   StyleSheet,
-  ActivityIndicator,
-  Dimensions,
+  Text,
+  TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import { Ionicons } from "@expo/vector-icons";
+import { SceneMap, TabBar, TabView } from "react-native-tab-view";
+import { TMDB_API_KEY } from '../../services/tmdbApi';
 import colors from '../../theme/colors';
 
 const { width } = Dimensions.get("window");
+const BASE_URL = 'https://api.themoviedb.org/3';
+const POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+const POSTER_WIDTH = width / 3 - 16; // 3 columns with spacing
+const POSTER_HEIGHT = POSTER_WIDTH * 1.5; // 3:2 aspect ratio
 
-const UpcomingMovies = () => (
-  <View style={styles.scene}>
-    <Text style={styles.text}>Upcoming Movies</Text>
-  </View>
+const fetchMovies = async (endpoint, params = {}) => {
+  try {
+    const response = await axios.get(`${BASE_URL}${endpoint}`, {
+      params,
+      headers: {
+        'Authorization': `Bearer ${TMDB_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data.results;
+  } catch (error) {
+    console.error("Error fetching movies:", error.response ? error.response.data : error.message);
+    return [];
+  }
+};
+
+// Simple poster-only component for upcoming movies
+const UpcomingMovieItem = ({ movie, onPress }) => (
+  <TouchableOpacity onPress={() => onPress(movie)} style={styles.upcomingItem}>
+    <Image 
+      source={{ uri: `${POSTER_BASE_URL}${movie.poster_path}` }} 
+      style={styles.upcomingPoster}
+    />
+  </TouchableOpacity>
 );
 
-const AllMovies = () => (
-  <View style={styles.scene}>
-    <Text style={styles.text}>All Movies</Text>
-  </View>
+// Component for all movies with rating
+const MovieItem = ({ movie, onPress }) => (
+  <TouchableOpacity onPress={() => onPress(movie)} style={styles.movieItem}>
+    <Image 
+      source={{ uri: `${POSTER_BASE_URL}${movie.poster_path}` }} 
+      style={styles.moviePoster} 
+    />
+    {/* {movie.vote_average > 0 && (
+      <View style={styles.ratingBadge}>
+        <Text style={styles.ratingText}>{movie.vote_average.toFixed(1)}</Text>
+      </View>
+    )} */}
+  </TouchableOpacity>
 );
 
-export default function SearchScreen() {
+const UpcomingMovies = ({ navigation }) => {
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadMovies = async () => {
+      const upcomingMovies = await fetchMovies('/movie/upcoming', {
+        language: 'en-US',
+        region: 'IN'
+      });
+      setMovies(upcomingMovies);
+      setLoading(false);
+    };
+    loadMovies();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <FlatList
+      data={movies}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <UpcomingMovieItem 
+          movie={item} 
+          onPress={() => navigation.navigate('MovieDetails', { movie: item })}
+        />
+      )}
+      numColumns={3}
+      contentContainerStyle={styles.upcomingList}
+    />
+  );
+};
+
+const AllMovies = ({ navigation }) => {
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadMovies = async () => {
+      const popularMovies = await fetchMovies('/movie/popular', {
+        language: 'en-US'
+      });
+      setMovies(popularMovies);
+      setLoading(false);
+    };
+    loadMovies();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <FlatList
+      data={movies}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <MovieItem 
+          movie={item} 
+          onPress={() => navigation.navigate('MovieDetails', { movie: item })}
+        />
+      )}
+      numColumns={3}
+      contentContainerStyle={styles.movieGrid}
+    />
+  );
+};
+
+export default function SearchScreen({ navigation }) {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "upcoming", title: "Upcoming" },
@@ -36,36 +150,24 @@ export default function SearchScreen() {
   ]);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [movies, setMovies] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
 
-  const fetchMovies = async () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     setLoading(true);
     setSearchActive(true);
+    
     try {
-      const response = await fetch(
-        `https://www.omdbapi.com/?s=${searchQuery}&apikey=e3328e04`
-      );
-      const data = await response.json();
-      if (data.Search) {
-        // Fetch full details for each movie
-        const detailedMovies = await Promise.all(
-          data.Search.map(async (movie) => {
-            const detailsResponse = await fetch(
-              `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=e3328e04`
-            );
-            const details = await detailsResponse.json();
-            return { ...movie, ...details }; // Merge basic & detailed data
-          })
-        );
-        setMovies(detailedMovies);
-      } else {
-        setMovies([]);
-      }
+      const results = await fetchMovies('/search/movie', {
+        query: searchQuery,
+        language: 'en-US'
+      });
+      
+      setSearchResults(results);
     } catch (error) {
-      console.error("Error fetching movies:", error);
+      console.error("Search error:", error);
     } finally {
       setLoading(false);
     }
@@ -74,12 +176,16 @@ export default function SearchScreen() {
   const clearSearch = () => {
     setSearchQuery("");
     setSearchActive(false);
-    setMovies([]);
+    setSearchResults([]);
   };
+
+  const renderScene = SceneMap({
+    upcoming: () => <UpcomingMovies navigation={navigation} />,
+    allMovies: () => <AllMovies navigation={navigation} />,
+  });
 
   return (
     <View style={styles.container}>
-      {/* Search Bar with Icons */}
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
           <Ionicons name="search" size={20} color={colors.text.input} style={{ paddingHorizontal: 5 }} />
@@ -88,7 +194,7 @@ export default function SearchScreen() {
             placeholder="Search movies..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            onSubmitEditing={fetchMovies}
+            onSubmitEditing={handleSearch}
             autoCorrect={false}
             returnKeyType="search"
           />
@@ -100,14 +206,10 @@ export default function SearchScreen() {
         </View>
       </View>
 
-      {/* Tabs (Hidden when search is active) */}
       {!searchActive ? (
         <TabView
           navigationState={{ index, routes }}
-          renderScene={SceneMap({
-            upcoming: UpcomingMovies,
-            allMovies: AllMovies,
-          })}
+          renderScene={renderScene}
           onIndexChange={setIndex}
           initialLayout={{ width }}
           renderTabBar={(props) => (
@@ -123,29 +225,24 @@ export default function SearchScreen() {
         />
       ) : (
         <>
-          {/* Loading Indicator */}
-          {loading && (
+          {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.primary} />
             </View>
+          ) : (
+            <FlatList
+              data={searchResults}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <MovieItem 
+                  movie={item} 
+                  onPress={() => navigation.navigate('MovieDetails', { movie: item })}
+                />
+              )}
+              numColumns={3}
+              contentContainerStyle={styles.movieGrid}
+            />
           )}
-
-          {/* Movies List */}
-          <FlatList
-            data={movies}
-            keyExtractor={(item) => item.imdbID}
-            renderItem={({ item }) => (
-              <View style={styles.movieItem}>
-                <Image source={{ uri: item.Poster }} style={{ width: 80, height: 120, borderRadius: 6, marginRight: 15 }} />
-                <View style={styles.movieContent}>
-                  <Text style={styles.movieTitle}>{item.Title}</Text>
-                  <Text style={styles.movieYear}>{item.Year}</Text>
-                  <Text style={styles.movieGenre}>🎭 {item.Genre}</Text>
-                  <Text style={styles.movieRating}>⭐ {item.imdbRating} / 10</Text>
-                </View>
-              </View>
-            )}
-          />
         </>
       )}
     </View>
@@ -158,22 +255,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.primary,
   },
   searchContainer: {
-    padding: 16,
+    padding: 8,
     backgroundColor: colors.background.secondary,
-    borderBottomWidth: 1,
     borderColor: colors.border.light,
-    shadowColor: colors.system.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.background.light,
     borderRadius: 8,
-    padding: 12,
+    padding: 6,
     borderWidth: 1,
     borderColor: colors.border.default,
   },
@@ -188,8 +279,6 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     backgroundColor: colors.background.secondary,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
     elevation: 0,
   },
   tabLabel: {
@@ -197,47 +286,46 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textTransform: "uppercase",
   },
+  upcomingItem: {
+    margin: 5.5,
+  },
+  upcomingPoster: {
+    width: POSTER_WIDTH,
+    height: POSTER_HEIGHT,
+    borderRadius: 8,
+  },
+  upcomingList: {
+    padding: 8,
+  },
   movieItem: {
-    backgroundColor: colors.background.secondary,
-    marginHorizontal: 16,
-    marginVertical: 8,
+    margin: 5.5,
+    position: 'relative',
+  },
+  moviePoster: {
+    width: POSTER_WIDTH,
+    height: POSTER_HEIGHT,
+    borderRadius: 8,
+  },
+  ratingBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: colors.primary,
     borderRadius: 12,
-    overflow: "hidden",
-    shadowColor: colors.system.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
-  movieContent: {
-    padding: 16,
+  ratingText: {
+    color: colors.text.white,
+    fontSize: 12,
+    fontWeight: 'bold',
   },
-  movieTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: colors.primary,
-    marginBottom: 8,
-  },
-  movieYear: {
-    fontSize: 14,
-    color: colors.text.secondary,
-    marginBottom: 4,
-  },
-  movieGenre: {
-    fontSize: 14,
-    color: colors.accent.primary,
-    fontWeight: "500",
-    marginBottom: 8,
-  },
-  movieRating: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: "bold",
+  movieGrid: {
+    padding: 5.5,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.background.primary,
   },
 });

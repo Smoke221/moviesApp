@@ -16,7 +16,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeStack from "../screens/Home/HomeStack";
 import NewsScreen from "../screens/News/NewsScreen";
 import ReviewsScreen from "../screens/Reviews/ReviewScreen";
-import SearchScreen from "../screens/Search/SearchScreen";
+import SearchStack from "../screens/Search/SearchStack";
 import ProfileDrawer from "./ProfileDrawer";
 import colors from '../theme/colors';
 
@@ -195,7 +195,7 @@ const TabNavigator = () => {
           component={HomeStack}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="home" size={size} color={color} />
+              <MaterialCommunityIcons name="home-variant" size={size} color={color} />
             ),
             headerShown: true,
             ...CustomHeader(),
@@ -206,24 +206,10 @@ const TabNavigator = () => {
           component={NewsScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons
-                name="newspaper"
-                size={size}
-                color={color}
-              />
+              <MaterialCommunityIcons name="newspaper-variant" size={size} color={color} />
             ),
             headerShown: true,
             ...CustomHeader(),
-          }}
-        />
-        <Tab.Screen
-          name="Search"
-          component={SearchScreen}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="search" size={size} color={color} />
-            ),
-            headerShown: false,
           }}
         />
         <Tab.Screen
@@ -231,14 +217,20 @@ const TabNavigator = () => {
           component={ReviewsScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons
-                name="movie-open-edit-outline"
-                size={size}
-                color={color}
-              />
+              <MaterialCommunityIcons name="star-half" size={size} color={color} />
             ),
             headerShown: true,
             ...CustomHeader(),
+          }}
+        />
+        <Tab.Screen
+          name="Search"
+          component={SearchStack}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="movie-search" size={size} color={color} />
+            ),
+            headerShown: false,
           }}
         />
       </Tab.Navigator>

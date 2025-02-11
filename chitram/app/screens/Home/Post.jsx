@@ -1,73 +1,123 @@
 import React, { useState, useRef } from "react";
 import {
+  View,
+  Text,
   Image,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
   Modal,
   Pressable,
+  Dimensions,
 } from "react-native";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import colors from "../../theme/colors";
+import { useNavigation } from "@react-navigation/native";
+
+const { width } = Dimensions.get('window');
 
 const Post = ({ item }) => {
+  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const ellipsisRef = useRef(null);
   const profileImageUrl = `https://www.gravatar.com/avatar/749c3e6ccdb52132b8ee9dad27b61c22?d=https://ui-avatars.com/api/${item.postedBy}/128/random`;
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const ellipsisRef = useRef(null); // To position the modal
+  const handleEllipsisPress = () => {
+    ellipsisRef.current.measure((x, y, width, height, pageX, pageY) => {
+      setMenuPosition({ x: pageX - 100, y: pageY + height });
+      setModalVisible(true);
+    });
+  };
+
+  const handlePostPress = () => {
+    navigation.navigate('PostDetails', { post: item });
+  };
+
+  // Get user's primary color (could be based on username hash)
+  const getUserColor = (username) => {
+    const colors = ['#FFD700', '#9B59B6', '#3498DB', '#E74C3C', '#2ECC71'];
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      hash = username.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
+  const userColor = getUserColor(item.postedBy);
+
+  // Determine post category and its style
+  const getPostStyle = () => {
+    const content = (item.title + " " + item.body).toLowerCase();
+    if (content.includes('review')) {
+      return { color: '#FFD700', icon: 'star-outline', label: 'REVIEW' };
+    } else if (content.includes('music')) {
+      return { color: '#9B59B6', icon: 'musical-notes-outline', label: 'SOUNDTRACK' };
+    } else if (content.includes('theory')) {
+      return { color: '#3498DB', icon: 'bulb-outline', label: 'THEORY' };
+    } else if (content.includes('scene')) {
+      return { color: '#E74C3C', icon: 'videocam-outline', label: 'SCENE' };
+    }
+    return { color: colors.primary, icon: 'film-outline', label: 'CINEPHILE' };
+  };
+
+  const postStyle = getPostStyle();
 
   return (
-    <View>
-      {/* Profile Image & Name */}
-      <View style={styles.leftContainer}>
-        <Image source={{ uri: profileImageUrl }} style={styles.profileImage} />
-        <Text style={styles.postedBy}>{item.postedBy}'s</Text>
+    <TouchableOpacity style={styles.container} onPress={handlePostPress} activeOpacity={0.9}>
+      {/* Header with Username */}
+      <View style={styles.header}>
+        <View style={styles.userStrip}>
+          <View style={[styles.userMarker, { backgroundColor: userColor }]} />
+          <Text style={styles.username}>{item.postedBy}</Text>
+        </View>
+        
+        <TouchableOpacity
+          ref={ellipsisRef}
+          onPress={handleEllipsisPress}
+          style={styles.moreButton}
+        >
+          <MaterialCommunityIcons name="dots-vertical" size={18} color={colors.text.light} />
+        </TouchableOpacity>
       </View>
 
-      {/* Title & Body */}
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.body}>{item.body}</Text>
+      {/* Main Content */}
+      <View style={styles.content}>
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.body} numberOfLines={3}>{item.body}</Text>
+      </View>
 
-      {/* Comments & Actions Container */}
-      <View style={styles.commentsAndActionsContainer}>
-        <Text style={styles.commentText}>{item.comments.length} Comments</Text>
+      {/* Footer with Comment Count */}
+      <View style={styles.footer}>
+        {/* <View style={styles.authorSection}>
+          <Image source={{ uri: profileImageUrl }} style={styles.authorImage} />
+          <Text style={styles.authorName}>{item.postedBy}</Text>
+        </View> */}
 
-        <View style={styles.rightContainer}>
+        <Text style={styles.commentCount}>
+          {item.comments.length} {item.comments.length === 1 ? 'comment' : 'comments'}
+        </Text>
 
-          {/* Ellipsis Icon to Open Modal */}
-          <TouchableOpacity
-            ref={ellipsisRef}
-            onPress={() => setModalVisible(true)}
-          >
-            <Ionicons name="ellipsis-vertical-outline" size={16} color="#777" />
+        <View style={styles.engagementStrip}>
+          <TouchableOpacity style={styles.engagementButton}>
+            <View style={styles.likeContainer}>
+              <Ionicons name="thumbs-up-outline" size={18} color={colors.text.light} />
+              <Text style={styles.likeCount}>{item.likes}</Text>
+            </View>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButton}>
-            <MaterialCommunityIcons
-              name="party-popper"
-              size={18}
-              color="#777"
-            />
-            <Text style={styles.actionText}>{item.shares} </Text>
+          <TouchableOpacity style={styles.engagementButton}>
+            <Ionicons name="chatbubble-outline" size={16} color={colors.text.light} />
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButton}>
-            <FontAwesome name="comments-o" size={18} color="#777" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButton}>
-            <MaterialCommunityIcons name="whistle" size={18} color="#777" />
-            <Text style={styles.actionText}>{item.likes}</Text>
+          <TouchableOpacity style={styles.engagementButton}>
+            <Ionicons name="arrow-redo-outline" size={18} color={colors.text.light} />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Modal for Actions */}
+      {/* Menu Modal */}
       <Modal
-        transparent
         visible={modalVisible}
+        transparent={true}
         animationType="fade"
         onRequestClose={() => setModalVisible(false)}
       >
@@ -75,108 +125,153 @@ const Post = ({ item }) => {
           style={styles.modalOverlay}
           onPress={() => setModalVisible(false)}
         >
-          <View style={styles.modalContainer}>
-            <TouchableOpacity style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Edit Post</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Delete Post</Text>
+          <View 
+            style={[
+              styles.menuContent,
+              {
+                position: 'absolute',
+                top: menuPosition.y,
+                left: menuPosition.x,
+              }
+            ]}
+          >
+            <TouchableOpacity 
+              style={styles.menuItem} 
+              onPress={() => setModalVisible(false)}
+            >
+              <Ionicons name="flag-outline" size={18} color={colors.primary} />
+              <Text style={styles.menuItemText}>Report</Text>
             </TouchableOpacity>
           </View>
         </Pressable>
       </Modal>
-
-      <View style={styles.divider} />
-    </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  leftContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
+  container: {
+    backgroundColor: colors.background.primary,
+    marginVertical: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
   },
-  profileImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 12,
   },
-  postedBy: {
-    fontSize: 14,
-    // fontWeight: "bold",
-    color: "gray",
-    marginBottom: 3,
+  userStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  userMarker: {
+    width: 3,
+    height: 16,
+    marginRight: 8,
+    borderRadius: 1.5,
+  },
+  username: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    color: colors.text.primary,
+  },
+  content: {
+    padding: 16,
+    paddingTop: 4,
   },
   title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#222",
-    marginTop: 3,
-    marginLeft: 24,
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginBottom: 8,
+    lineHeight: 24,
   },
   body: {
-    fontSize: 14,
-    color: "#444",
-    marginVertical: 6,
-    marginLeft: 24,
+    fontSize: 15,
+    color: colors.text.secondary,
+    lineHeight: 22,
   },
-  commentsAndActionsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 8,
-    paddingLeft: 2,
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: colors.border.light,
   },
-  rightContainer: {
-    flexDirection: "row-reverse",
-    alignItems: "center",
-    marginTop: 8,
-    paddingHorizontal: 12,
-    gap: 30,
+  authorSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  actionButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
+  authorImage: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    marginRight: 8,
   },
-  actionText: {
+  authorName: {
+    fontSize: 13,
+    color: colors.text.secondary,
+    fontWeight: '500',
+  },
+  commentCount: {
+    fontSize: 13,
+    color: colors.text.secondary,
+    fontWeight: '500',
+  },
+  engagementStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.background.light,
+    borderRadius: 20,
+    padding: 4,
+  },
+  engagementButton: {
+    padding: 6,
+    marginHorizontal: 4,
+  },
+  likeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  likeCount: {
     fontSize: 12,
-    color: "#777",
-  },
-  commentText: {
-    marginTop: 10,
-    fontSize: 12,
-    color: "#555",
-    fontWeight: "500",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#ddd",
-    marginVertical: 8,
+    color: colors.text.light,
+    fontWeight: '500',
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: 'transparent',
   },
-  modalContainer: {
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 8,
-    shadowColor: "#000",
+  menuContent: {
+    backgroundColor: colors.background.primary,
+    borderRadius: 6,
+    padding: 4,
+    shadowColor: colors.system.shadow,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+    width: 120,
   },
-  modalButton: {
-    padding: 10,
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderRadius: 4,
   },
-  modalButtonText: {
+  menuItemText: {
+    marginLeft: 8,
     fontSize: 14,
-    color: "#222",
+    color: colors.text.primary,
+    fontWeight: '500',
   },
 });
 

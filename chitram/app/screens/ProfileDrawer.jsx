@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { PanGestureHandler, State } from "react-native-gesture-handler";
 import Feather from "react-native-vector-icons/Feather";
+import colors from '../theme/colors';
 
 const ProfileDrawer = ({ closeDrawer }) => {
   const handleGesture = (event) => {
@@ -32,12 +33,12 @@ const ProfileDrawer = ({ closeDrawer }) => {
 
         {/* Menu Items */}
         <TouchableOpacity style={styles.menuItem}>
-          <Feather name="settings" size={18} color="black" />
+          <Feather name="settings" size={18} color={colors.text.primary} />
           <Text style={styles.menuText}>Settings</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuItem}>
-          <Feather name="log-out" size={18} color="black" />
+          <Feather name="log-out" size={18} color={colors.text.primary} />
           <Text style={styles.menuText}>Logout</Text>
         </TouchableOpacity>
       </View>
@@ -48,7 +49,7 @@ const ProfileDrawer = ({ closeDrawer }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.background.primary,
     width: 270,
     paddingVertical: 40,
     paddingHorizontal: 20,
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    shadowColor: "#000",
+    shadowColor: colors.system.shadow,
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#333",
+    color: colors.text.primary,
     marginLeft: 10,
   },
   flexSpacer: {
@@ -93,6 +94,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginLeft: 10,
     fontWeight: "500",
+    color: colors.text.primary,
   },
 });
 

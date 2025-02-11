@@ -1,73 +1,64 @@
-import React, { useRef } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
   Image,
-  FlatList,
-  Dimensions,
   StyleSheet,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+  Dimensions,
+  FlatList,
+  Animated,
+} from 'react-native';
+import { newsData } from '../../data/news';
+import colors from '../../theme/colors';
 
-const newsData = [
-  {
-    id: "1",
-    url: "https://imgs.search.brave.com/hrVWE_A7uUfGTY64HjsYAeiG3qblWwky0goHHTaha5k/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMuYXVndXN0bWFu/LmNvbS93cC1jb250/ZW50L3VwbG9hZHMv/c2l0ZXMvNi8yMDI0/LzA4LzEzMDA1OTQ5/L1VudGl0bGVkLWRl/c2lnbi0yMDI0LTA4/LTEyVDIzMzQyMi4x/NzQucG5n",
-    content:
-      "On February 7, Chay took to Instagram to share a picture of his wife, actress Sobhita, where she was seen standing inside their home wearing a black hoodie. She was striking a side pose, looking at the camera with teasing eyes. The hoodie featured a red print with Chay’s poster picture from 'Thandel' and the title of the film written on it. He captioned the post, “Giving me all the positive vibes I need! @sobhitad #Thandel.”",
-  },
-  {
-    id: "2",
-    url: "https://static.toiimg.com/thumb/msid-118017688,imgsize-57808,width-400,resizemode-4/118017688.jpg",
-    content:
-      "Vicky Kaushal is promoting Chhaava, where he portrays Chhatrapati Sambhaji Maharaj. He shared that Katrina Kaif loves his Maratha king look and jokes about the lengthy shoot. Vicky also expressed his appreciation for Katrina's films Singh Is Kinng and Welcome, noting his fondness for quoting lines from the latter.",
-  },
-  {
-    id: "3",
-    url: "https://cdn.telugu360.com/te/wp-content/uploads/sites/2/2025/02/Jack.jpg",
-    content: `సిద్దు జొన్న‌ల‌గ‌డ్డ టైమ్ బాగుంది. చిన్న సినిమాల‌తో పెద్ద హిట్లు కొడుతున్నాడు. డీజే టిల్లు, టిల్లు స్క్వేర్ చిత్రాలు సిద్దూని స్టార్ బోయ్‌గా మార్చేశాయి. ఇప్పుడు ‘జాక్‌’ అవ‌తారం ఎత్తాడు. ‘బొమ్మ‌రిల్లు’ భాస్క‌ర్ ద‌ర్శక‌త్వం వ‌హించిన సినిమా ఇది. ‘బేబీ’ ఫేమ్ వైష్ణ‌వి క‌థానాయిక‌గా న‌టించింది. బివిఎస్ఎన్ ప్ర‌సాద్ నిర్మాత‌. ఏప్రిల్ 10న విడుద‌ల కాబోతోంది. ఇప్పుడు టీజ‌ర్ వ‌దిలారు.`,
-  },
-  {
-    id: "4",
-    url: "https://www.hindustantimes.com/ht-img/img/2025/02/07/550x309/parineeti_1738933562826_1738933563269.jpg",
-    content:
-      "After Parineeti Chopra was notably absent from the haldi, mehendi and sangeet ceremonies of Priyanka's brother Siddharth Chopra, many wondered if she was going to attend the main wedding. On Friday, all speculations were laid to rest as Parineeti was spotted leaving for the wedding, accompanied by her husband, politician Raghav Chadha. The two waved at the paparazzi on their way to the venue",
-  },
-  {
-    id: "5",
-    url: "https://www.hindustantimes.com/ht-img/img/2025/02/07/550x309/pc_1738930905474_1738930905775.jpg",
-    content:
-      "Actor Priyanka Chopra brought the moves during her brother Siddharth Chopra's wedding baraat. She joined her family and close relatives to dance to her own film song ‘Gallan Goodiayan’ during the baraat on Friday afternoon. The actor has been busy with the pre-wedding festivities in the last few days. Siddharth is all set to tie the knot with Neelam Upadhaya.",
-  },
-];
-
-const { height, width } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 
 export default function NewsScreen() {
-  const flatListRef = useRef(null);
-  const insets = useSafeAreaInsets();
+  const viewabilityConfig = {
+    itemVisiblePercentThreshold: 50,
+  };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.itemContainer}>
+      {/* Image Section (Top Half) */}
+      <View style={styles.imageContainer}>
+        <Image
+          source={{ uri: item.url }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        <View style={styles.overlay} />
+        
+        {/* Floating Chitram Badge */}
+        <View style={styles.floatingBadgeContainer}>
+          <View style={styles.badgeInner}>
+            <Text style={styles.chitramText}>CHITRAM</Text>
+            {/* <Text style={styles.tagline}>Your Daily Movie Digest</Text> */}
+          </View>
+        </View>
+      </View>
+
+      {/* Content Section (Bottom Half) */}
+      <View style={styles.contentContainer}>
+        <View style={styles.contentWrapper}>
+          {/* News Content */}
+          <Text style={styles.content}>{item.content}</Text>
+        </View>
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
       <FlatList
-        ref={flatListRef}
         data={newsData}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id}
         pagingEnabled
-        snapToAlignment="start"
+        showsVerticalScrollIndicator={false}
         snapToInterval={height}
         decelerationRate="fast"
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item, index }) => (
-          <View style={styles.itemContainer}>
-            <Image source={{ uri: item.url }} style={styles.image} />
-            <Text style={styles.chitram}>Chitram</Text>
-            <View style={styles.contentContainer}>
-              <Text style={styles.content}>{item.content}</Text>
-            </View>
-          </View>
-        )}
-        scrollEnabled={newsData.length > 1}
+        viewabilityConfig={viewabilityConfig}
       />
     </View>
   );
@@ -76,44 +67,95 @@ export default function NewsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f7f7",
+    backgroundColor: colors.background.primary,
   },
   itemContainer: {
     width: width,
     height: height,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: colors.background.secondary,
+  },
+  imageContainer: {
+    height: '50%',
+    width: '100%',
+    position: 'relative',
   },
   image: {
-    width: "100%",
-    height: "50%",
-    resizeMode: "cover",
+    width: '100%',
+    height: '100%',
   },
-  chitram: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#e63946",
-    letterSpacing: 2,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    alignSelf: "flex-start",
-    fontFamily: "cursive",
-    borderLeftWidth: 5,
-    borderLeftColor: "#e63946",
-    marginVertical: 8,
-    marginLeft: 5,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   contentContainer: {
+    height: '50%',
+    backgroundColor: colors.background.secondary,
+    borderTopWidth: 1,
+    borderTopColor: colors.border.light,
+  },
+  contentWrapper: {
+    padding: 20,
     flex: 1,
-    width: "100%",
-    paddingHorizontal: 10,
-    justifyContent: "flex-start",
+  },
+  badgeContainer: {
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+  chitram: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: colors.primary,
+    letterSpacing: 2,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    fontFamily: "cursive",
+    borderLeftWidth: 5,
+    borderLeftColor: colors.accent.primary,
+    backgroundColor: colors.background.light,
+    borderRadius: 4,
+    shadowColor: colors.system.shadow,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   content: {
     fontSize: 16,
-    color: "#333",
-    fontWeight: "400",
+    color: colors.text.primary,
     lineHeight: 24,
-    textAlign: "justify",
+    textAlign: 'justify',
+  },
+  floatingBadgeContainer: {
+    position: 'absolute',
+    bottom: -15,
+    right: 16,
+    backgroundColor: colors.background.secondary,
+    borderRadius: 8,
+    padding: 2,
+    shadowColor: colors.system.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+    zIndex: 10,
+  },
+  badgeInner: {
+    borderWidth: 1,
+    borderColor: colors.accent.primary,
+    borderRadius: 6,
+    padding: 4,
+    alignItems: 'center',
+  },
+  chitramText: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: colors.primary,
+    letterSpacing: 1,
+  },
+  tagline: {
+    fontSize: 10,
+    color: colors.text.secondary,
+    marginTop: 2,
+    letterSpacing: 1,
   },
 });

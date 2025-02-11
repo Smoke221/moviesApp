@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, ActivityIndicator, StyleSheet, ScrollView } from "react-native";
+import colors from '../../theme/colors';
 
 export default function MovieDetailsScreen({ route }) {
   const { imdbID } = route.params;
@@ -23,7 +24,7 @@ export default function MovieDetailsScreen({ route }) {
   }, [imdbID]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#e63946" style={styles.loading} />;
+    return <ActivityIndicator size="large" color={colors.primary} style={styles.loading} />;
   }
 
   if (!movieDetails) {
@@ -49,7 +50,7 @@ export default function MovieDetailsScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.background.primary,
     padding: 15,
   },
   poster: {
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
   },
   genre: {
     fontSize: 16,
-    color: "#007bff",
+    color: colors.text.secondary,
     textAlign: "center",
     marginBottom: 10,
   },
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
   detailsContainer: {
     marginTop: 10,
     padding: 10,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: colors.background.secondary,
     borderRadius: 8,
   },
   detail: {
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 18,
     textAlign: "center",
-    color: "red",
+    color: colors.error,
     marginTop: 20,
   },
 });

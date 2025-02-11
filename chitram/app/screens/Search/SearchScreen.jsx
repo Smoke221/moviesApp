@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { Ionicons } from "@expo/vector-icons";
+import colors from '../../theme/colors';
 
 const { width } = Dimensions.get("window");
 
@@ -80,21 +81,23 @@ export default function SearchScreen() {
     <View style={styles.container}>
       {/* Search Bar with Icons */}
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="#555" style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search movies..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSubmitEditing={fetchMovies}
-          autoCorrect={false}
-          returnKeyType="search"
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-            <Ionicons name="close-circle" size={20} color="#e63946" />
-          </TouchableOpacity>
-        )}
+        <View style={styles.searchBar}>
+          <Ionicons name="search" size={20} color={colors.text.input} style={{ paddingHorizontal: 5 }} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search movies..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={fetchMovies}
+            autoCorrect={false}
+            returnKeyType="search"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
+              <Ionicons name="close-circle" size={20} color={colors.primary} />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Tabs (Hidden when search is active) */}
@@ -110,18 +113,22 @@ export default function SearchScreen() {
           renderTabBar={(props) => (
             <TabBar
               {...props}
-              indicatorStyle={{ backgroundColor: "#e63946" }}
+              indicatorStyle={{ backgroundColor: colors.primary }}
               style={styles.tabBar}
-              labelStyle={styles.label}
-              activeColor="#e63946"
-              inactiveColor="#555"
+              labelStyle={styles.tabLabel}
+              activeColor={colors.primary}
+              inactiveColor={colors.text.input}
             />
           )}
         />
       ) : (
         <>
           {/* Loading Indicator */}
-          {loading && <ActivityIndicator size="large" color="#e63946" />}
+          {loading && (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.primary} />
+            </View>
+          )}
 
           {/* Movies List */}
           <FlatList
@@ -129,8 +136,8 @@ export default function SearchScreen() {
             keyExtractor={(item) => item.imdbID}
             renderItem={({ item }) => (
               <View style={styles.movieItem}>
-                <Image source={{ uri: item.Poster }} style={styles.poster} />
-                <View style={styles.movieInfo}>
+                <Image source={{ uri: item.Poster }} style={{ width: 80, height: 120, borderRadius: 6, marginRight: 15 }} />
+                <View style={styles.movieContent}>
                   <Text style={styles.movieTitle}>{item.Title}</Text>
                   <Text style={styles.movieYear}>{item.Year}</Text>
                   <Text style={styles.movieGenre}>🎭 {item.Genre}</Text>
@@ -148,96 +155,89 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: 10,
+    backgroundColor: colors.background.primary,
   },
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    backgroundColor: "#f8f8f8",
-    marginHorizontal: 15,
-    marginBottom: 15,
-    paddingLeft: 12,
-    elevation: 3,
-  },
-  searchBar: {
-    flex: 1,
-    height: 45,
-    fontSize: 16,
-    paddingHorizontal: 10,
-  },
-  searchIcon: {
-    paddingHorizontal: 5,
-  },
-  clearButton: {
-    padding: 10,
-  },
-  tabBar: {
-    backgroundColor: "#fff",
-    elevation: 4,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  scene: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f7f7f7",
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  movieItem: {
-    flexDirection: "row",
-    padding: 12,
-    backgroundColor: "#fff",
-    marginBottom: 15,
-    borderRadius: 12,
-    alignItems: "center",
-    elevation: 3,
-    marginHorizontal: 15,
-    shadowColor: "#000",
+    padding: 16,
+    backgroundColor: colors.background.secondary,
+    borderBottomWidth: 1,
+    borderColor: colors.border.light,
+    shadowColor: colors.system.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    elevation: 3,
   },
-  poster: {
-    width: 80,
-    height: 120,
-    borderRadius: 6,
-    marginRight: 15,
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.background.light,
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
-  movieInfo: {
+  searchInput: {
     flex: 1,
+    marginLeft: 8,
+    fontSize: 16,
+    color: colors.text.primary,
+  },
+  clearButton: {
+    padding: 8,
+  },
+  tabBar: {
+    backgroundColor: colors.background.secondary,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    elevation: 0,
+  },
+  tabLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    textTransform: "uppercase",
+  },
+  movieItem: {
+    backgroundColor: colors.background.secondary,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 12,
+    overflow: "hidden",
+    shadowColor: colors.system.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  movieContent: {
+    padding: 16,
   },
   movieTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
-    marginBottom: 4,
+    color: colors.primary,
+    marginBottom: 8,
   },
   movieYear: {
     fontSize: 14,
-    color: "gray",
-    marginBottom: 2,
+    color: colors.text.secondary,
+    marginBottom: 4,
   },
   movieGenre: {
     fontSize: 14,
-    color: "#007bff",
+    color: colors.accent.primary,
     fontWeight: "500",
-    marginBottom: 2,
+    marginBottom: 8,
   },
   movieRating: {
     fontSize: 14,
-    color: "#e63946",
+    color: colors.primary,
     fontWeight: "bold",
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.background.primary,
+  },
 });
-

@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Reply from "./Reply";
+import colors from '../../theme/colors';
 
 const Comment = ({ comment, showAllReplies, handleToggleReplies }) => {
   return (
@@ -44,11 +45,11 @@ const styles = StyleSheet.create({
   commentAuthor: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text.primary,
   },
   commentText: {
     fontSize: 14,
-    color: "#666",
+    color: colors.text.light,
   },
   commentDetails: {
     flexDirection: "row",
@@ -61,11 +62,11 @@ const styles = StyleSheet.create({
   showMoreButton: {
     marginTop: 10,
     padding: 5,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: colors.background.light,
     borderRadius: 5,
   },
   showMoreText: {
-    color: "#007BFF",
+    color: colors.accent.link,
     fontSize: 14,
     textAlign: "center",
   },

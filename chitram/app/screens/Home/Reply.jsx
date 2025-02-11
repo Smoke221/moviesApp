@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import colors from '../../theme/colors';
 
 const Reply = ({ reply }) => {
   return (
@@ -16,18 +17,19 @@ const Reply = ({ reply }) => {
 const styles = StyleSheet.create({
   replyContainer: {
     marginTop: 5,
-    paddingLeft: 20,
-    borderLeftWidth: 2,
-    borderLeftColor: "#ccc",
+    marginLeft: 20,
+    paddingLeft: 10,
+    borderLeftWidth: 1,
+    borderLeftColor: colors.border.light,
   },
   commentAuthor: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text.primary,
   },
   commentText: {
     fontSize: 14,
-    color: "#666",
+    color: colors.text.light,
   },
   commentDetails: {
     flexDirection: "row",
@@ -36,7 +38,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 14,
-    color: "#888",
+    color: colors.text.veryLight,
   },
 });
 

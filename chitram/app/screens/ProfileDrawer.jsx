@@ -1,14 +1,44 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
 import { PanGestureHandler, State } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
 import Feather from "react-native-vector-icons/Feather";
+import { useAuth } from "../../hooks/useAuth";
 import colors from '../theme/colors';
 
 const ProfileDrawer = ({ closeDrawer }) => {
+  const navigation = useNavigation();
+  const { logout, user } = useAuth();
+
   const handleGesture = (event) => {
     if (event.nativeEvent.translationX < -50) {
       closeDrawer(); // Close if swiped left
     }
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to log out?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'LoginScreen' }],
+            });
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   return (
@@ -25,7 +55,7 @@ const ProfileDrawer = ({ closeDrawer }) => {
             }}
             style={styles.profileImage}
           />
-          <Text style={styles.userName}>John Doe</Text>
+          <Text style={styles.userName}>{user?.username || 'User'}</Text>
         </View>
 
         {/* Spacer to push menu items to bottom */}
@@ -37,7 +67,10 @@ const ProfileDrawer = ({ closeDrawer }) => {
           <Text style={styles.menuText}>Settings</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity 
+          style={styles.menuItem} 
+          onPress={handleLogout}
+        >
           <Feather name="log-out" size={18} color={colors.text.primary} />
           <Text style={styles.menuText}>Logout</Text>
         </TouchableOpacity>
@@ -71,7 +104,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    // marginLeft: 15,
   },
   userName: {
     fontSize: 16,

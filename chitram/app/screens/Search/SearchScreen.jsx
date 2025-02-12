@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import axios from 'axios';
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -11,38 +11,72 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
+  Platform,
 } from "react-native";
+import NetInfo from "@react-native-community/netinfo";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
-import { TMDB_API_KEY } from '../../services/tmdbApi';
-import colors from '../../theme/colors';
+import { TMDB_API_KEY } from "../../services/tmdbApi";
+import colors from "../../theme/colors";
 
 const { width } = Dimensions.get("window");
-const BASE_URL = 'https://api.themoviedb.org/3';
-const POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+const BASE_URL = "https://api.themoviedb.org/3";
+const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const POSTER_WIDTH = width / 3 - 16; // 3 columns with spacing
 const POSTER_HEIGHT = POSTER_WIDTH * 1.5; // 3:2 aspect ratio
 
 const fetchMovies = async (endpoint, params = {}) => {
+  // Check network connectivity first
+  const netInfo = await NetInfo.fetch();
+  if (!netInfo.isConnected) {
+    throw new Error("No internet connection");
+  }
+
   try {
     const response = await axios.get(`${BASE_URL}${endpoint}`, {
-      params,
+      params: {
+        ...params,
+        api_key: TMDB_API_KEY,
+      },
       headers: {
-        'Authorization': `Bearer ${TMDB_API_KEY}`,
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
+      timeout: 10000, // 10 seconds timeout
     });
-    return response.data.results;
+    
+    return response.data.results || [];
   } catch (error) {
-    console.error("Error fetching movies:", error.response ? error.response.data : error.message);
-    return [];
+    // Log detailed error information
+    console.error("Fetch Movies Error Details:", {
+      message: error.message,
+      code: error.code,
+      config: error.config,
+      response: error.response ? {
+        status: error.response.status,
+        data: error.response.data
+      } : null
+    });
+
+    // Detailed error handling
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      throw new Error(`API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+    } else if (error.request) {
+      // The request was made but no response was received
+      throw new Error("No response received from server. Check your network connection.");
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      throw new Error(`Request setup error: ${error.message}`);
+    }
   }
 };
 
 // Simple poster-only component for upcoming movies
 const UpcomingMovieItem = ({ movie, onPress }) => (
   <TouchableOpacity onPress={() => onPress(movie)} style={styles.upcomingItem}>
-    <Image 
-      source={{ uri: `${POSTER_BASE_URL}${movie.poster_path}` }} 
+    <Image
+      source={{ uri: `${POSTER_BASE_URL}${movie.poster_path}` }}
       style={styles.upcomingPoster}
     />
   </TouchableOpacity>
@@ -51,9 +85,9 @@ const UpcomingMovieItem = ({ movie, onPress }) => (
 // Component for all movies with rating
 const MovieItem = ({ movie, onPress }) => (
   <TouchableOpacity onPress={() => onPress(movie)} style={styles.movieItem}>
-    <Image 
-      source={{ uri: `${POSTER_BASE_URL}${movie.poster_path}` }} 
-      style={styles.moviePoster} 
+    <Image
+      source={{ uri: `${POSTER_BASE_URL}${movie.poster_path}` }}
+      style={styles.moviePoster}
     />
     {/* {movie.vote_average > 0 && (
       <View style={styles.ratingBadge}>
@@ -69,9 +103,9 @@ const UpcomingMovies = ({ navigation }) => {
 
   useEffect(() => {
     const loadMovies = async () => {
-      const upcomingMovies = await fetchMovies('/movie/upcoming', {
-        language: 'en-US',
-        region: 'IN'
+      const upcomingMovies = await fetchMovies("/movie/upcoming", {
+        language: "en-US",
+        region: "IN",
       });
       setMovies(upcomingMovies);
       setLoading(false);
@@ -92,9 +126,9 @@ const UpcomingMovies = ({ navigation }) => {
       data={movies}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-        <UpcomingMovieItem 
-          movie={item} 
-          onPress={() => navigation.navigate('MovieDetails', { movie: item })}
+        <UpcomingMovieItem
+          movie={item}
+          onPress={() => navigation.navigate("MovieDetails", { movie: item })}
         />
       )}
       numColumns={3}
@@ -109,8 +143,8 @@ const AllMovies = ({ navigation }) => {
 
   useEffect(() => {
     const loadMovies = async () => {
-      const popularMovies = await fetchMovies('/movie/popular', {
-        language: 'en-US'
+      const popularMovies = await fetchMovies("/movie/popular", {
+        language: "en-US",
       });
       setMovies(popularMovies);
       setLoading(false);
@@ -131,9 +165,9 @@ const AllMovies = ({ navigation }) => {
       data={movies}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-        <MovieItem 
-          movie={item} 
-          onPress={() => navigation.navigate('MovieDetails', { movie: item })}
+        <MovieItem
+          movie={item}
+          onPress={() => navigation.navigate("MovieDetails", { movie: item })}
         />
       )}
       numColumns={3}
@@ -153,21 +187,58 @@ export default function SearchScreen({ navigation }) {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
+  const [networkError, setNetworkError] = useState(null);
+
+  useEffect(() => {
+    const checkNetworkConnection = async () => {
+      const netInfo = await NetInfo.fetch();
+      if (!netInfo.isConnected) {
+        setNetworkError("No internet connection. Please check your network settings.");
+      } else {
+        setNetworkError(null);
+      }
+    };
+
+    checkNetworkConnection();
+    const unsubscribe = NetInfo.addEventListener(checkNetworkConnection);
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
+    
+    // Check network before searching
+    const netInfo = await NetInfo.fetch();
+    if (!netInfo.isConnected) {
+      Alert.alert("Network Error", "No internet connection. Please check your network settings.");
+      return;
+    }
+
     setLoading(true);
     setSearchActive(true);
     
     try {
-      const results = await fetchMovies('/search/movie', {
+      const results = await fetchMovies("/search/movie", {
         query: searchQuery,
-        language: 'en-US'
+        language: "en-US",
       });
       
       setSearchResults(results);
+      
+      if (results.length === 0) {
+        Alert.alert("Search", "No movies found matching your query.");
+      }
     } catch (error) {
       console.error("Search error:", error);
+      Alert.alert(
+        "Search Error", 
+        Platform.OS === 'ios' 
+          ? error.message 
+          : "Unable to perform search. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -184,11 +255,31 @@ export default function SearchScreen({ navigation }) {
     allMovies: () => <AllMovies navigation={navigation} />,
   });
 
+  // Render network error if exists
+  if (networkError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{networkError}</Text>
+        <TouchableOpacity 
+          style={styles.retryButton}
+          onPress={() => NetInfo.fetch()}
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
-          <Ionicons name="search" size={20} color={colors.text.input} style={{ paddingHorizontal: 5 }} />
+          <Ionicons
+            name="search"
+            size={20}
+            color={colors.text.input}
+            style={{ paddingHorizontal: 5 }}
+          />
           <TextInput
             style={styles.searchInput}
             placeholder="Search movies..."
@@ -234,9 +325,11 @@ export default function SearchScreen({ navigation }) {
               data={searchResults}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
-                <MovieItem 
-                  movie={item} 
-                  onPress={() => navigation.navigate('MovieDetails', { movie: item })}
+                <MovieItem
+                  movie={item}
+                  onPress={() =>
+                    navigation.navigate("MovieDetails", { movie: item })
+                  }
                 />
               )}
               numColumns={3}
@@ -299,7 +392,7 @@ const styles = StyleSheet.create({
   },
   movieItem: {
     margin: 5.5,
-    position: 'relative',
+    position: "relative",
   },
   moviePoster: {
     width: POSTER_WIDTH,
@@ -307,7 +400,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   ratingBadge: {
-    position: 'absolute',
+    position: "absolute",
     top: 8,
     right: 8,
     backgroundColor: colors.primary,
@@ -318,7 +411,7 @@ const styles = StyleSheet.create({
   ratingText: {
     color: colors.text.white,
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   movieGrid: {
     padding: 5.5,
@@ -327,5 +420,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: colors.text.primary,
+    marginBottom: 10,
+  },
+  retryButton: {
+    backgroundColor: colors.primary,
+    padding: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    fontSize: 16,
+    color: colors.text.white,
   },
 });

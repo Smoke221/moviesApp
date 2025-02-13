@@ -19,6 +19,10 @@ import colors from '../../theme/colors';
 const { width } = Dimensions.get('window');
 const BACKDROP_HEIGHT = width * 0.5625; // 16:9 aspect ratio
 
+// Default images for missing posters and backdrops
+const DEFAULT_POSTER = require('../../../assets/images/default_poster.png');
+const DEFAULT_BACKDROP = require('../../../assets/images/default_backdrop.jpg');
+
 const MovieDetailsScreen = ({ route, navigation }) => {
   const { movie } = route.params;
   const [details, setDetails] = useState(null);
@@ -68,7 +72,10 @@ const MovieDetailsScreen = ({ route, navigation }) => {
       <Image
         source={{ uri: `https://image.tmdb.org/t/p/w185${item.profile_path}` }}
         style={styles.castImage}
-        // defaultSource={require('../../assets/placeholder.png')}
+        defaultSource={DEFAULT_POSTER}
+        onError={(e) => {
+          console.log('Cast image load error:', e.nativeEvent.error);
+        }}
       />
       <Text style={styles.castName} numberOfLines={2}>{item.name}</Text>
       <Text style={styles.castCharacter} numberOfLines={1}>{item.character}</Text>
@@ -106,6 +113,14 @@ const MovieDetailsScreen = ({ route, navigation }) => {
     return null;
   }
 
+  const posterSource = details.poster_path
+    ? { uri: `https://image.tmdb.org/t/p/w500${details.poster_path}` }
+    : DEFAULT_POSTER;
+
+  const backdropSource = details.backdrop_path
+    ? { uri: `https://image.tmdb.org/t/p/original${details.backdrop_path}` }
+    : DEFAULT_BACKDROP;
+
   return (
     <View style={styles.container}>
       <Animated.ScrollView 
@@ -120,8 +135,12 @@ const MovieDetailsScreen = ({ route, navigation }) => {
         {/* Backdrop Section */}
         <View style={styles.backdropContainer}>
           <Image
-            source={{ uri: `https://image.tmdb.org/t/p/original${details.backdrop_path}` }}
+            source={backdropSource}
             style={styles.backdrop}
+            defaultSource={DEFAULT_BACKDROP}
+            onError={(e) => {
+              console.log('Backdrop image load error:', e.nativeEvent.error);
+            }}
             resizeMode="cover"
           />
         </View>
@@ -131,8 +150,12 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           {/* Header Section */}
           <View style={styles.headerSection}>
             <Image
-              source={{ uri: `https://image.tmdb.org/t/p/w500${details.poster_path}` }}
+              source={posterSource}
               style={styles.poster}
+              defaultSource={DEFAULT_POSTER}
+              onError={(e) => {
+                console.log('Poster image load error:', e.nativeEvent.error);
+              }}
             />
             <View style={styles.headerInfo}>
               <Text style={styles.title}>{details.title}</Text>
@@ -262,6 +285,10 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                         source={{ uri: `https://image.tmdb.org/t/p/w200${company.logo_path}` }}
                         style={styles.companyLogo}
                         resizeMode="contain"
+                        defaultSource={DEFAULT_POSTER}
+                        onError={(e) => {
+                          console.log('Company logo image load error:', e.nativeEvent.error);
+                        }}
                       />
                     ) : (
                       <Text style={styles.companyName}>{company.name}</Text>

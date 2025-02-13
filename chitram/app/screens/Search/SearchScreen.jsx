@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -25,46 +25,47 @@ const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const POSTER_WIDTH = width / 3 - 16; // 3 columns with spacing
 const POSTER_HEIGHT = POSTER_WIDTH * 1.5; // 3:2 aspect ratio
 
-const fetchMovies = async (endpoint, params = {}) => {
-  // Check network connectivity first
-  const netInfo = await NetInfo.fetch();
-  if (!netInfo.isConnected) {
-    throw new Error("No internet connection");
-  }
+// Default image for missing posters
+const DEFAULT_POSTER = require('../../../assets/images/default_poster.png');
 
+const fetchMovies = async (endpoint, params = {}) => {
   try {
     const response = await axios.get(`${BASE_URL}${endpoint}`, {
       params: {
         ...params,
-        api_key: TMDB_API_KEY,
       },
       headers: {
+        Authorization: `Bearer ${TMDB_API_KEY}`,
         "Content-Type": "application/json",
       },
       timeout: 10000, // 10 seconds timeout
     });
-    
+
     return response.data.results || [];
   } catch (error) {
-    // Log detailed error information
     console.error("Fetch Movies Error Details:", {
       message: error.message,
       code: error.code,
       config: error.config,
-      response: error.response ? {
-        status: error.response.status,
-        data: error.response.data
-      } : null
+      response: error.response
+        ? {
+            status: error.response.status,
+            data: error.response.data,
+          }
+        : null,
     });
 
     // Detailed error handling
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      throw new Error(`API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+      // The request was made and the server responded with a status code that falls out of the range of 2xx
+      throw new Error(
+        `API Error: ${error.response.status} - ${JSON.stringify(
+          error.response.data
+        )}`
+      );
     } else if (error.request) {
       // The request was made but no response was received
-      throw new Error("No response received from server. Check your network connection.");
+      throw new Error("No response received from server");
     } else {
       // Something happened in setting up the request that triggered an Error
       throw new Error(`Request setup error: ${error.message}`);
@@ -73,44 +74,74 @@ const fetchMovies = async (endpoint, params = {}) => {
 };
 
 // Simple poster-only component for upcoming movies
-const UpcomingMovieItem = ({ movie, onPress }) => (
-  <TouchableOpacity onPress={() => onPress(movie)} style={styles.upcomingItem}>
-    <Image
-      source={{ uri: `${POSTER_BASE_URL}${movie.poster_path}` }}
-      style={styles.upcomingPoster}
-    />
-  </TouchableOpacity>
-);
+const UpcomingMovieItem = React.memo(({ movie, onPress }) => {
+  const posterSource = movie.poster_path
+    ? { uri: `${POSTER_BASE_URL}${movie.poster_path}` }
+    : DEFAULT_POSTER;
+
+  return (
+    <TouchableOpacity onPress={() => onPress(movie)} style={styles.upcomingItem}>
+      <Image 
+        source={posterSource}
+        style={styles.upcomingPoster}
+        defaultSource={DEFAULT_POSTER}
+        onError={(e) => {
+          console.log('Image load error:', e.nativeEvent.error);
+        }}
+      />
+    </TouchableOpacity>
+  );
+});
 
 // Component for all movies with rating
-const MovieItem = ({ movie, onPress }) => (
-  <TouchableOpacity onPress={() => onPress(movie)} style={styles.movieItem}>
-    <Image
-      source={{ uri: `${POSTER_BASE_URL}${movie.poster_path}` }}
-      style={styles.moviePoster}
-    />
-    {/* {movie.vote_average > 0 && (
-      <View style={styles.ratingBadge}>
-        <Text style={styles.ratingText}>{movie.vote_average.toFixed(1)}</Text>
-      </View>
-    )} */}
-  </TouchableOpacity>
-);
+const MovieItem = React.memo(({ movie, onPress }) => {
+  const posterSource = movie.poster_path
+    ? { uri: `${POSTER_BASE_URL}${movie.poster_path}` }
+    : DEFAULT_POSTER;
 
-const UpcomingMovies = ({ navigation }) => {
+  return (
+    <TouchableOpacity onPress={() => onPress(movie)} style={styles.movieItem}>
+      <Image 
+        source={posterSource}
+        style={styles.moviePoster}
+        defaultSource={DEFAULT_POSTER}
+        onError={(e) => {
+          console.log('Image load error:', e.nativeEvent.error);
+        }}
+      />
+    </TouchableOpacity>
+  );
+});
+
+const UpcomingMovies = React.memo(({ navigation }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     const loadMovies = async () => {
-      const upcomingMovies = await fetchMovies("/movie/upcoming", {
-        language: "en-US",
-        region: "IN",
-      });
-      setMovies(upcomingMovies);
-      setLoading(false);
+      try {
+        const upcomingMovies = await fetchMovies("/movie/upcoming", {
+          language: "en-US",
+          region: "IN",
+        });
+        if (mounted) {
+          setMovies(upcomingMovies);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error loading upcoming movies:", error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
     };
+
     loadMovies();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (loading) {
@@ -135,21 +166,34 @@ const UpcomingMovies = ({ navigation }) => {
       contentContainerStyle={styles.upcomingList}
     />
   );
-};
+});
 
-const AllMovies = ({ navigation }) => {
+const AllMovies = React.memo(({ navigation }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     const loadMovies = async () => {
-      const popularMovies = await fetchMovies("/movie/popular", {
-        language: "en-US",
-      });
-      setMovies(popularMovies);
-      setLoading(false);
+      try {
+        const popularMovies = await fetchMovies("/movie/popular", {
+          language: "en-US",
+        });
+        if (mounted) {
+          setMovies(popularMovies);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error loading popular movies:", error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
     };
     loadMovies();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (loading) {
@@ -174,7 +218,7 @@ const AllMovies = ({ navigation }) => {
       contentContainerStyle={styles.movieGrid}
     />
   );
-};
+});
 
 export default function SearchScreen({ navigation }) {
   const [index, setIndex] = useState(0);
@@ -189,11 +233,74 @@ export default function SearchScreen({ navigation }) {
   const [searchActive, setSearchActive] = useState(false);
   const [networkError, setNetworkError] = useState(null);
 
+  const renderScene = useMemo(
+    () =>
+      SceneMap({
+        upcoming: () => <UpcomingMovies navigation={navigation} />,
+        allMovies: () => <AllMovies navigation={navigation} />,
+      }),
+    [navigation]
+  );
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.trim() && searchQuery.length >= 2) {
+        handleSearch();
+      }
+    }, 500); // Wait 500ms after last keystroke before searching
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      setSearchActive(false);
+      setSearchResults([]);
+      return;
+    }
+
+    setLoading(true);
+    setSearchActive(true);
+
+    try {
+      const results = await fetchMovies("/search/movie", {
+        query: searchQuery,
+        language: "en-US",
+      });
+
+      setSearchResults(results);
+
+      if (results.length === 0) {
+        Alert.alert("Search", "No movies found matching your query.");
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      Alert.alert(
+        "Search Error",
+        Platform.OS === "ios"
+          ? error.message
+          : "Unable to perform search. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTextChange = (text) => {
+    setSearchQuery(text);
+    if (!text.trim()) {
+      setSearchActive(false);
+      setSearchResults([]);
+    }
+  };
+
   useEffect(() => {
     const checkNetworkConnection = async () => {
       const netInfo = await NetInfo.fetch();
       if (!netInfo.isConnected) {
-        setNetworkError("No internet connection. Please check your network settings.");
+        setNetworkError(
+          "No internet connection. Please check your network settings."
+        );
       } else {
         setNetworkError(null);
       }
@@ -207,60 +314,12 @@ export default function SearchScreen({ navigation }) {
     };
   }, []);
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    
-    // Check network before searching
-    const netInfo = await NetInfo.fetch();
-    if (!netInfo.isConnected) {
-      Alert.alert("Network Error", "No internet connection. Please check your network settings.");
-      return;
-    }
-
-    setLoading(true);
-    setSearchActive(true);
-    
-    try {
-      const results = await fetchMovies("/search/movie", {
-        query: searchQuery,
-        language: "en-US",
-      });
-      
-      setSearchResults(results);
-      
-      if (results.length === 0) {
-        Alert.alert("Search", "No movies found matching your query.");
-      }
-    } catch (error) {
-      console.error("Search error:", error);
-      Alert.alert(
-        "Search Error", 
-        Platform.OS === 'ios' 
-          ? error.message 
-          : "Unable to perform search. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const clearSearch = () => {
-    setSearchQuery("");
-    setSearchActive(false);
-    setSearchResults([]);
-  };
-
-  const renderScene = SceneMap({
-    upcoming: () => <UpcomingMovies navigation={navigation} />,
-    allMovies: () => <AllMovies navigation={navigation} />,
-  });
-
   // Render network error if exists
   if (networkError) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{networkError}</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.retryButton}
           onPress={() => NetInfo.fetch()}
         >
@@ -284,38 +343,29 @@ export default function SearchScreen({ navigation }) {
             style={styles.searchInput}
             placeholder="Search movies..."
             value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearch}
+            onChangeText={handleTextChange}
             autoCorrect={false}
-            returnKeyType="search"
           />
           {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-              <Ionicons name="close-circle" size={20} color={colors.primary} />
+            <TouchableOpacity
+              onPress={() => {
+                setSearchQuery("");
+                setSearchActive(false);
+                setSearchResults([]);
+              }}
+            >
+              <Ionicons
+                name="close-circle"
+                size={20}
+                color={colors.text.secondary}
+              />
             </TouchableOpacity>
           )}
         </View>
       </View>
 
-      {!searchActive ? (
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{ width }}
-          renderTabBar={(props) => (
-            <TabBar
-              {...props}
-              indicatorStyle={{ backgroundColor: colors.primary }}
-              style={styles.tabBar}
-              labelStyle={styles.tabLabel}
-              activeColor={colors.primary}
-              inactiveColor={colors.text.input}
-            />
-          )}
-        />
-      ) : (
-        <>
+      {searchActive ? (
+        <View style={styles.resultsContainer}>
           {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.primary} />
@@ -336,7 +386,24 @@ export default function SearchScreen({ navigation }) {
               contentContainerStyle={styles.movieGrid}
             />
           )}
-        </>
+        </View>
+      ) : (
+        <TabView
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{ width }}
+          renderTabBar={(props) => (
+            <TabBar
+              {...props}
+              indicatorStyle={{ backgroundColor: colors.primary }}
+              style={styles.tabBar}
+              labelStyle={styles.tabLabel}
+              activeColor={colors.primary}
+              inactiveColor={colors.text.input}
+            />
+          )}
+        />
       )}
     </View>
   );
@@ -367,9 +434,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text.primary,
   },
-  clearButton: {
-    padding: 8,
-  },
   tabBar: {
     backgroundColor: colors.background.secondary,
     elevation: 0,
@@ -389,6 +453,12 @@ const styles = StyleSheet.create({
   },
   upcomingList: {
     padding: 8,
+  },
+  upcomingMovieTitle: {
+    fontSize: 12,
+    color: colors.text.primary,
+    marginTop: 4,
+    textAlign: "center",
   },
   movieItem: {
     margin: 5.5,
@@ -440,5 +510,8 @@ const styles = StyleSheet.create({
   retryButtonText: {
     fontSize: 16,
     color: colors.text.white,
+  },
+  resultsContainer: {
+    flex: 1,
   },
 });

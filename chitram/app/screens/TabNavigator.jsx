@@ -195,7 +195,7 @@ const TabNavigator = () => {
           component={HomeStack}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="home-variant" size={size} color={color} />
+              <MaterialCommunityIcons name="home" size={size} color={color} />
             ),
             headerShown: true,
             ...CustomHeader(),
@@ -217,7 +217,7 @@ const TabNavigator = () => {
           component={ReviewsScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="star-half" size={size} color={color} />
+              <MaterialCommunityIcons name="star-half-full" size={size} color={color} />
             ),
             headerShown: true,
             ...CustomHeader(),

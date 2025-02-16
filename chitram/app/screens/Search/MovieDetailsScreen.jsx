@@ -10,6 +10,8 @@ import {
   Linking,
   FlatList,
   Animated,
+  WebView,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
@@ -36,8 +38,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           await Promise.all([
             axios.get(`https://api.themoviedb.org/3/movie/${movie.id}`, {
               params: {
-                append_to_response:
-                  "credits,videos,images,similar,keywords,reviews",
+                append_to_response: "credits,videos,images,similar",
               },
               headers: {
                 Authorization: `Bearer ${TMDB_API_KEY}`,
@@ -220,74 +221,152 @@ const MovieDetailsScreen = ({ route, navigation }) => {
               <Text style={styles.originalLanguage}>
                 Original Language: {details.original_language?.toUpperCase()}
               </Text>
-              <View style={styles.adultContainer}>
-                <Text style={styles.adultLabel}></Text>
-                {details.adult ? (
-                  <View style={styles.adultBadge}>
-                    <Ionicons name="warning" size={20} color="#FF6B6B" />
-                    <Text style={styles.adultText}>18+</Text>
+              <View style={styles.adultRatingContainer}>
+                <View
+                  style={[
+                    styles.adultRatingBadge,
+                    details.adult
+                      ? styles.adultRatingBadgeMature
+                      : styles.adultRatingBadgeFamily,
+                  ]}
+                >
+                  <View style={styles.adultRatingContent}>
+                    <View style={styles.adultRatingIconWrapper}>
+                      {details.adult ? (
+                        <Ionicons name="warning" size={20} color="#FF6B6B" />
+                      ) : (
+                        <Ionicons name="happy-outline" size={20} color="#4CD964" />
+                      )}
+                    </View>
+                    <Text style={styles.adultRatingText}>
+                      {details.adult ? "Mature Content" : "Family Friendly"}
+                    </Text>
                   </View>
-                ) : (
-                  <View style={styles.adultBadge}>
-                    <Ionicons name="checkmark-circle" size={20} color="#4CD964" />
-                    <Text style={styles.adultText}>All Ages</Text>
-                  </View>
-                )}
-              </View>
-
-              <View style={styles.genresContainer}>
-                {details.genres.map((genre) => (
-                  <View key={genre.id} style={styles.genreTag}>
-                    <Text style={styles.genreText}>{genre.name}</Text>
-                  </View>
-                ))}
+                </View>
               </View>
             </View>
           </View>
 
-          {/* Basic Info Section */}
-          {/* <View style={styles.section}>
-            <View style={styles.basicInfo}>
-              <Text style={styles.year}>
-                {details.release_date?.split("-")[0]} •{" "}
-                {Math.floor(details.runtime / 60)}h {details.runtime % 60}m
-              </Text>
-              {details.imdbRating && (
-                <View style={styles.imdbRating}>
-                  <Image
-                    source={require("../../../assets/images/imdb.png")}
-                    style={styles.imdbLogo}
-                  />
-                  <Text style={styles.ratingText}>{details.imdbRating}</Text>
-                </View>
-              )}
-            </View>
-            <Text style={styles.originalLanguage}>
-              Original Language: {details.original_language?.toUpperCase()}
-            </Text>
-            <View style={styles.genreContainer}>
-              {details.genres?.map((genre) => (
+          <View>
+            <View style={styles.genresContainer}>
+              {details.genres.map((genre) => (
                 <View key={genre.id} style={styles.genreTag}>
                   <Text style={styles.genreText}>{genre.name}</Text>
                 </View>
               ))}
             </View>
-          </View> */}
+          </View>
+
+          {/* Overview Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Overview</Text>
+            <Text style={styles.overview}>{details.overview}</Text>
+          </View>
+
+          {/* Videos Section */}
+          {details.videos?.results && details.videos.results.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Trailers & Videos</Text>
+
+              {/* Primary Trailer */}
+              {(() => {
+                const trailers = details.videos.results.filter(
+                  (video) => video.type === "Trailer"
+                );
+                const primaryTrailer = trailers[0];
+
+                return primaryTrailer ? (
+                  <TouchableOpacity
+                    style={styles.primaryVideoItem}
+                    onPress={() => {
+                      Linking.openURL(
+                        `https://www.youtube.com/watch?v=${primaryTrailer.key}`
+                      );
+                    }}
+                  >
+                    <Image
+                      source={{
+                        uri: `https://img.youtube.com/vi/${primaryTrailer.key}/maxresdefault.jpg`,
+                      }}
+                      style={styles.primaryVideoThumbnail}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.primaryVideoOverlay}>
+                      <Ionicons
+                        name="play-circle"
+                        size={80}
+                        color="white"
+                        style={styles.primaryPlayIcon}
+                      />
+                      <Text style={styles.primaryVideoTitle} numberOfLines={2}>
+                        {primaryTrailer.name}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ) : null;
+              })()}
+
+              {/* Additional Videos */}
+              {(() => {
+                const additionalVideos = details.videos.results.filter(
+                  (video) => video.type !== "Trailer"
+                );
+
+                return additionalVideos.length > 0 ? (
+                  <FlatList
+                    horizontal
+                    data={additionalVideos}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={styles.videoItem}
+                        onPress={() => {
+                          Linking.openURL(
+                            `https://www.youtube.com/watch?v=${item.key}`
+                          );
+                        }}
+                      >
+                        <Image
+                          source={{
+                            uri: `https://img.youtube.com/vi/${item.key}/0.jpg`,
+                          }}
+                          style={styles.videoThumbnail}
+                        />
+                        <View style={styles.videoOverlay}>
+                          <Ionicons
+                            name="play-circle"
+                            size={50}
+                            color="white"
+                            style={styles.playIcon}
+                          />
+                        </View>
+                        <Text style={styles.videoTitle} numberOfLines={2}>
+                          {item.name}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.videoList}
+                  />
+                ) : null;
+              })()}
+            </View>
+          )}
 
           {/* Watch Providers Section */}
           {details.watchProviders?.IN && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Available On</Text>
+              <Text style={styles.sectionTitle}>Streaming On</Text>
               <View style={styles.watchProvidersContainer}>
                 {details.watchProviders.IN.flatrate?.map((provider) => {
                   // Map of OTT direct URLs
                   const ottUrls = {
-                    'Netflix': 'https://www.netflix.com/browse',
-                    'Amazon Prime Video': 'https://www.primevideo.com',
-                    'Disney Plus': 'https://www.hotstar.com',
-                    'Apple TV Plus': 'https://tv.apple.com',
-                    'Hulu': 'https://www.hulu.com',
-                    'HBO Max': 'https://www.hbomax.com',
+                    Netflix: "https://www.netflix.com/browse",
+                    "Amazon Prime Video": "https://www.primevideo.com",
+                    "Disney Plus": "https://www.hotstar.com",
+                    "Apple TV Plus": "https://tv.apple.com",
+                    Hulu: "https://www.hulu.com",
+                    "HBO Max": "https://www.hbomax.com",
                   };
 
                   return (
@@ -328,7 +407,10 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                   <Text style={styles.rentTitle}>Available for Rent</Text>
                   <View style={styles.watchProvidersContainer}>
                     {details.watchProviders.IN.rent.map((provider) => {
-                      const rentPrice = details.watchProviders.IN.rent_price?.[provider.provider_id];
+                      const rentPrice =
+                        details.watchProviders.IN.rent_price?.[
+                          provider.provider_id
+                        ];
                       return (
                         <TouchableOpacity
                           key={provider.provider_id}
@@ -364,12 +446,6 @@ const MovieDetailsScreen = ({ route, navigation }) => {
               )}
             </View>
           )}
-
-          {/* Overview Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Overview</Text>
-            <Text style={styles.overview}>{details.overview}</Text>
-          </View>
 
           {/* Production Info */}
           {/* <View style={styles.section}>
@@ -426,7 +502,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           )}
 
           {/* Keywords/Tags */}
-          {details.keywords.keywords.length > 0 && (
+          {/* {details.keywords.keywords.length > 0 && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Keywords</Text>
               <FlatList
@@ -438,10 +514,10 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                 contentContainerStyle={styles.keywordsList}
               />
             </View>
-          )}
+          )} */}
 
           {/* Reviews Section */}
-          {details.reviews.results.length > 0 && (
+          {/* {details.reviews.results.length > 0 && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Reviews</Text>
               <FlatList
@@ -451,7 +527,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                 scrollEnabled={false}
               />
             </View>
-          )}
+          )} */}
 
           {/* Production Companies */}
           {details.production_companies.length > 0 && (
@@ -661,15 +737,9 @@ const styles = StyleSheet.create({
     color: colors.primary,
     textAlign: "center",
   },
-  crewList: {
-    paddingVertical: 8,
-  },
   crewItem: {
     backgroundColor: "black",
-    padding: 12,
-    borderRadius: 8,
-    marginRight: 12,
-    minWidth: 150,
+    minWidth: 120,
   },
   crewName: {
     fontSize: 14,
@@ -784,36 +854,34 @@ const styles = StyleSheet.create({
   watchProvidersContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: 'space-between',
-    paddingHorizontal: 4,
-    marginTop: 16,
+    justifyContent: "flex-start",
+    // paddingHorizontal: 4,
+    // gap: 16,
   },
   providerItem: {
     width: width / 3 - 24,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: 12,
     padding: 12,
     alignItems: "center",
     marginBottom: 16,
   },
   providerLogo: {
-    width: 50,
-    height: 50,
-    borderRadius: 12,
+    width: 35,
+    height: 35,
+    borderRadius: 6,
     marginBottom: 8,
   },
   providerName: {
     fontSize: 12,
     color: "white",
     textAlign: "center",
-    marginBottom: 4,
-    fontWeight: '500',
+    // marginBottom: 4,
+    fontWeight: "500",
   },
   providerPrice: {
     fontSize: 11,
     color: colors.primary,
     textAlign: "center",
-    fontWeight: '600',
+    fontWeight: "600",
   },
   rentSection: {
     marginTop: 24,
@@ -824,32 +892,111 @@ const styles = StyleSheet.create({
     color: colors.primary,
     marginBottom: 12,
   },
-  adultContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+  adultRatingContainer: {
+    // alignItems: "center",
     marginVertical: 12,
-    // backgroundColor: 'rgba(255,255,255,0.05)',
-    // padding: 12,
-    borderRadius: 8,
   },
-  adultLabel: {
-    fontSize: 14,
-    color: 'white',
-    marginRight: 12,
-    fontWeight: '500',
-  },
-  adultBadge: {
+  adultRatingBadge: {
     flexDirection: "row",
     alignItems: "center",
+    // justifyContent: "center",
+    width: "100%",
+    maxWidth: 150,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderRadius: 20,
   },
-  adultText: {
-    color:"white",
-    fontSize: 13,
-    fontWeight: '600',
-    marginLeft: 6,
+  adultRatingBadgeMature: {
+    backgroundColor: "rgba(255, 107, 107, 0.2)", // Soft red
+  },
+  adultRatingBadgeFamily: {
+    backgroundColor: "rgba(76, 217, 100, 0.2)", // Soft green
+  },
+  adultRatingContent: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  adultRatingIconWrapper: {
+    marginRight: 8,
+  },
+  adultRatingText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  videoItem: {
+    width: 200,
+    height: 120,
+    marginRight: 16,
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  videoThumbnail: {
+    width: "100%",
+    height: "100%",
+  },
+  videoOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  playIcon: {
+    opacity: 0.8,
+  },
+  videoTitle: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    width: "100%",
+    padding: 8,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    color: "white",
+  },
+  videoList: {
+    paddingVertical: 8,
+  },
+  primaryVideoItem: {
+    width: "100%",
+    height: 220,
+    marginBottom: 16,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  primaryVideoThumbnail: {
+    width: "100%",
+    height: "100%",
+  },
+  primaryVideoOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    padding: 16,
+  },
+  primaryPlayIcon: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -40,
+    marginLeft: -40,
+    opacity: 0.8,
+  },
+  primaryVideoTitle: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 16,
   },
 });
 

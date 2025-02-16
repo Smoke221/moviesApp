@@ -166,7 +166,7 @@ const PostDetail = ({ route, navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton}>
             <Ionicons 
-              name="bookmark-outline" 
+              name="share-social" 
               size={24} 
               color={colors.text.light}
             />
@@ -180,7 +180,7 @@ const PostDetail = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: "black",
   },
   scrollView: {
     flex: 1,
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 100,
-    height: 60,
+    // backgroundColor: colors.primary,
   },
   headerContent: {
     flex: 1,
@@ -199,11 +199,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
+    padding: 10,
   },
   headerTitle: {
-    fontSize: 17,
+    color: 'white',
+    fontSize: 18,
     fontWeight: '600',
-    color: colors.text.primary,
     flex: 1,
     textAlign: 'center',
     marginHorizontal: 16,
@@ -211,85 +212,153 @@ const styles = StyleSheet.create({
   heroSection: {
     padding: 16,
     paddingTop: 16,
-    backgroundColor: colors.background.primary,
+    backgroundColor: "black",
   },
   heroContent: {
     marginBottom: 20,
   },
   author: {
     fontSize: 14,
-    color: colors.text.secondary,
     marginBottom: 8,
     letterSpacing: 0.5,
+    color:"white"
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text.primary,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.primary,
     lineHeight: 34,
   },
   contentSection: {
-    backgroundColor: colors.background.primary,
+    backgroundColor: "black",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 20,
   },
   body: {
     fontSize: 16,
-    color: colors.text.secondary,
-    lineHeight: 24,
-    marginBottom: 24,
+    color: 'white',
+    lineHeight: 26,
+    marginBottom: 20,
   },
   stats: {
     flexDirection: 'row',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    marginBottom: 24,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.border.light,
+    marginBottom: 20,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12,
+    paddingVertical: 12,
   },
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 6,
   },
   statText: {
-    marginLeft: 8,
-    fontSize: 15,
-    color: colors.text.secondary,
-    fontWeight: '500',
+    color: 'white',
+    fontSize: 14,
   },
   statDivider: {
     width: 1,
     height: 20,
-    backgroundColor: colors.border.light,
-    marginHorizontal: 24,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  commentsSection: {
+    marginTop: 20,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.text.primary,
-    marginBottom: 20,
+    color: colors.primary,
+    marginBottom: 12,
   },
   commentContainer: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   commentContent: {
-    backgroundColor: colors.background.light,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: 12,
     padding: 12,
   },
   commentHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 8,
   },
   commentAuthor: {
-    fontSize: 14,
+    color: colors.primary,
     fontWeight: '600',
-    color: colors.text.primary,
+  },
+  commentText: {
+    color: 'white',
+    lineHeight: 22,
+  },
+  commentFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  commentAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  actionText: {
+    color: 'white',
+    fontSize: 12,
+  },
+  bottomBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  commentInput: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginRight: 10,
+  },
+  commentInputText: {
+    color: 'white',
+    marginLeft: 10,
+    opacity: 0.7,
+  },
+  bottomActions: {
+    flexDirection: 'row',
+    gap: 15,
+  },
+  replies: {
+    marginTop: 12,
+    marginLeft: 20,
+    paddingLeft: 12,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255,255,255,0.2)',
+  },
+  replyContainer: {
+    marginTop: 8,
+    padding: 10,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 8,
+  },
+  replyAuthor: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.primary,
+    marginBottom: 4,
+  },
+  replyText: {
+    fontSize: 14,
+    color: 'white',
+    lineHeight: 20,
+    opacity: 0.8,
   },
   replyIndicator: {
     flexDirection: 'row',
@@ -297,83 +366,9 @@ const styles = StyleSheet.create({
   },
   replyCount: {
     fontSize: 12,
-    color: colors.text.light,
+    color: 'white',
     marginLeft: 4,
-  },
-  commentText: {
-    fontSize: 15,
-    color: colors.text.secondary,
-    lineHeight: 22,
-  },
-  commentFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,
-    gap: 16,
-  },
-  commentAction: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  actionText: {
-    fontSize: 12,
-    color: colors.text.light,
-  },
-  replies: {
-    marginTop: 12,
-    marginLeft: 20,
-    paddingLeft: 12,
-    borderLeftWidth: 1,
-    borderLeftColor: colors.border.light,
-  },
-  replyContainer: {
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: colors.background.light,
-    borderRadius: 12,
-  },
-  replyAuthor: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.text.primary,
-    marginBottom: 4,
-  },
-  replyText: {
-    fontSize: 14,
-    color: colors.text.secondary,
-    lineHeight: 20,
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderTopWidth: 1,
-    borderTopColor: colors.border.light,
-    backgroundColor: colors.background.primary,
-  },
-  commentInput: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.background.light,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 12,
-    gap: 8,
-  },
-  commentInputText: {
-    fontSize: 14,
-    color: colors.text.light,
-  },
-  bottomActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  actionButton: {
-    padding: 4,
+    opacity: 0.7,
   },
 });
 

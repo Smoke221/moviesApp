@@ -194,7 +194,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           </View>
 
           {/* Production Info */}
-          <View style={styles.section}>
+          {/* <View style={styles.section}>
             <Text style={styles.sectionTitle}>Production Info</Text>
             <View style={styles.productionDetails}>
               <Text style={styles.productionText}>
@@ -211,7 +211,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                 </Text>
               </Text>
             </View>
-          </View>
+          </View> */}
 
           {/* Cast Section */}
           {details.credits.cast.length > 0 && (
@@ -325,7 +325,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: "black",
   },
   scrollView: {
     flex: 1,
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: colors.text.primary,
+    color: colors.primary,
     marginBottom: 4,
   },
   tagline: {
@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: colors.text.primary,
+    color: "white",
     marginBottom: 12,
   },
   overview: {
@@ -468,19 +468,19 @@ const styles = StyleSheet.create({
   castName: {
     fontSize: 14,
     fontWeight: '500',
-    color: colors.text.primary,
+    color: "white",
     textAlign: 'center',
   },
   castCharacter: {
     fontSize: 12,
-    color: colors.text.secondary,
+    color: colors.primary,
     textAlign: 'center',
   },
   crewList: {
     paddingVertical: 8,
   },
   crewItem: {
-    backgroundColor: colors.background.secondary,
+    backgroundColor: "black",
     padding: 12,
     borderRadius: 8,
     marginRight: 12,
@@ -489,12 +489,12 @@ const styles = StyleSheet.create({
   crewName: {
     fontSize: 14,
     fontWeight: '500',
-    color: colors.text.primary,
+    color: "white",
     marginBottom: 4,
   },
   crewJob: {
     fontSize: 12,
-    color: colors.text.secondary,
+    color: colors.primary,
   },
   keywordsList: {
     paddingVertical: 8,
@@ -539,6 +539,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
+    backgroundColor: "white",
   },
   companyItem: {
     width: width / 3 - 24,
@@ -553,7 +554,7 @@ const styles = StyleSheet.create({
   },
   companyName: {
     fontSize: 12,
-    color: colors.text.secondary,
+    color: "black",
     textAlign: 'center',
   },
 });

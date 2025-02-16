@@ -40,6 +40,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 3,
+    backgroundColor:"black",
   },
 });
 

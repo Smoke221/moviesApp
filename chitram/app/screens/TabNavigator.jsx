@@ -118,15 +118,15 @@ const TabNavigator = () => {
         }}
       >
         <TouchableOpacity style={{ marginRight: 15 }}>
-          <Ionicons name="notifications-outline" size={24} color="black" />
+          <Ionicons name="notifications-outline" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity>
-          <Feather name="message-square" size={24} color="black" />
+          <Feather name="message-square" size={24} color="white" />
         </TouchableOpacity>
       </View>
     ),
     headerStyle: {
-      backgroundColor: colors.background.primary,
+      backgroundColor:"black",
       elevation: 0,
       shadowOpacity: 0,
       borderBottomWidth: 0,
@@ -178,9 +178,9 @@ const TabNavigator = () => {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.text.inactive,
+          tabBarInactiveTintColor: "white",
           tabBarStyle: {
-            backgroundColor: colors.background.primary,
+            backgroundColor:"black",
             borderTopWidth: 0,
             elevation: 8,
             shadowColor: colors.system.shadow,

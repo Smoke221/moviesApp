@@ -14,7 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import colors from "../../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const Post = ({ item }) => {
   const navigation = useNavigation();
@@ -31,12 +31,12 @@ const Post = ({ item }) => {
   };
 
   const handlePostPress = () => {
-    navigation.navigate('PostDetails', { post: item });
+    navigation.navigate("PostDetails", { post: item });
   };
 
   // Get user's primary color (could be based on username hash)
   const getUserColor = (username) => {
-    const colors = ['#FFD700', '#9B59B6', '#3498DB', '#E74C3C', '#2ECC71'];
+    const colors = ["#FFD700", "#9B59B6", "#3498DB", "#E74C3C", "#2ECC71"];
     let hash = 0;
     for (let i = 0; i < username.length; i++) {
       hash = username.charCodeAt(i) + ((hash << 5) - hash);
@@ -49,42 +49,56 @@ const Post = ({ item }) => {
   // Determine post category and its style
   const getPostStyle = () => {
     const content = (item.title + " " + item.body).toLowerCase();
-    if (content.includes('review')) {
-      return { color: '#FFD700', icon: 'star-outline', label: 'REVIEW' };
-    } else if (content.includes('music')) {
-      return { color: '#9B59B6', icon: 'musical-notes-outline', label: 'SOUNDTRACK' };
-    } else if (content.includes('theory')) {
-      return { color: '#3498DB', icon: 'bulb-outline', label: 'THEORY' };
-    } else if (content.includes('scene')) {
-      return { color: '#E74C3C', icon: 'videocam-outline', label: 'SCENE' };
+    if (content.includes("review")) {
+      return { color: "#FFD700", icon: "star-outline", label: "REVIEW" };
+    } else if (content.includes("music")) {
+      return {
+        color: "#9B59B6",
+        icon: "musical-notes-outline",
+        label: "SOUNDTRACK",
+      };
+    } else if (content.includes("theory")) {
+      return { color: "#3498DB", icon: "bulb-outline", label: "THEORY" };
+    } else if (content.includes("scene")) {
+      return { color: "#E74C3C", icon: "videocam-outline", label: "SCENE" };
     }
-    return { color: colors.primary, icon: 'film-outline', label: 'CINEPHILE' };
+    return { color: colors.primary, icon: "film-outline", label: "CINEPHILE" };
   };
 
   const postStyle = getPostStyle();
 
   return (
-    <TouchableOpacity style={styles.container} onPress={handlePostPress} activeOpacity={0.9}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={handlePostPress}
+      activeOpacity={0.9}
+    >
       {/* Header with Username */}
       <View style={styles.header}>
         <View style={styles.userStrip}>
           <View style={[styles.userMarker, { backgroundColor: userColor }]} />
           <Text style={styles.username}>{item.postedBy}</Text>
         </View>
-        
+
         <TouchableOpacity
           ref={ellipsisRef}
           onPress={handleEllipsisPress}
           style={styles.moreButton}
         >
-          <MaterialCommunityIcons name="dots-vertical" size={18} color={colors.text.light} />
+          <MaterialCommunityIcons
+            name="dots-vertical"
+            size={18}
+            color={colors.text.light}
+          />
         </TouchableOpacity>
       </View>
 
       {/* Main Content */}
       <View style={styles.content}>
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.body} numberOfLines={3}>{item.body}</Text>
+        <Text style={styles.body} numberOfLines={3}>
+          {item.body}
+        </Text>
       </View>
 
       {/* Footer with Comment Count */}
@@ -95,21 +109,34 @@ const Post = ({ item }) => {
         </View> */}
 
         <Text style={styles.commentCount}>
-          {item.comments.length} {item.comments.length === 1 ? 'comment' : 'comments'}
+          {item.comments.length}{" "}
+          {item.comments.length === 1 ? "comment" : "comments"}
         </Text>
 
         <View style={styles.engagementStrip}>
           <TouchableOpacity style={styles.engagementButton}>
             <View style={styles.likeContainer}>
-              <Ionicons name="thumbs-up-outline" size={18} color={colors.text.light} />
+              <Ionicons
+                name="thumbs-up-outline"
+                size={18}
+                color={colors.text.light}
+              />
               <Text style={styles.likeCount}>{item.likes}</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.engagementButton}>
-            <Ionicons name="chatbubble-outline" size={16} color={colors.text.light} />
+            <Ionicons
+              name="chatbubble-outline"
+              size={16}
+              color={colors.text.light}
+            />
           </TouchableOpacity>
           <TouchableOpacity style={styles.engagementButton}>
-            <Ionicons name="arrow-redo-outline" size={18} color={colors.text.light} />
+            <Ionicons
+              name="arrow-redo-outline"
+              size={18}
+              color={colors.text.light}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -125,18 +152,18 @@ const Post = ({ item }) => {
           style={styles.modalOverlay}
           onPress={() => setModalVisible(false)}
         >
-          <View 
+          <View
             style={[
               styles.menuContent,
               {
-                position: 'absolute',
+                position: "absolute",
                 top: menuPosition.y,
                 left: menuPosition.x,
-              }
+              },
             ]}
           >
-            <TouchableOpacity 
-              style={styles.menuItem} 
+            <TouchableOpacity
+              style={styles.menuItem}
               onPress={() => setModalVisible(false)}
             >
               <Ionicons name="flag-outline" size={18} color={colors.primary} />
@@ -151,20 +178,23 @@ const Post = ({ item }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.background.primary,
+    backgroundColor: "black",
     marginVertical: 8,
     borderRadius: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
+    borderWidth: 1,
+    // borderColor: colors.accent.primary,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingRight: 12,
+    // backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   userStrip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
@@ -176,102 +206,91 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
     letterSpacing: 0.5,
-    color: colors.text.primary,
+    color: "#FFFFFF",
+  },
+  moreButton: {
+    padding: 8,
   },
   content: {
     padding: 16,
     paddingTop: 4,
+    backgroundColor: "black",
   },
   title: {
     fontSize: 18,
-    fontWeight: '700',
-    color: colors.text.primary,
+    fontWeight: "700",
+    color: colors.primary,
     marginBottom: 8,
     lineHeight: 24,
   },
   body: {
-    fontSize: 15,
-    color: colors.text.secondary,
+    fontSize: 14,
+    color: "#FFFFFF",
     lineHeight: 22,
+    opacity: 0.8,
   },
   footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: colors.border.light,
-  },
-  authorSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  authorImage: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    marginRight: 8,
-  },
-  authorName: {
-    fontSize: 13,
-    color: colors.text.secondary,
-    fontWeight: '500',
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    borderTopWidth: 0.5,
+    borderTopColor: "rgba(255, 255, 255, 0.1)",
   },
   commentCount: {
-    fontSize: 13,
-    color: colors.text.secondary,
-    fontWeight: '500',
+    color: colors.text.light,
+    fontSize: 12,
+    fontWeight: "600",
   },
   engagementStrip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.background.light,
-    borderRadius: 20,
-    padding: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
   },
   engagementButton: {
-    padding: 6,
-    marginHorizontal: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
   },
   likeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   likeCount: {
-    fontSize: 12,
     color: colors.text.light,
-    fontWeight: '500',
+    fontSize: 12,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'transparent',
+    left: 20,
+    bottom: 35,
   },
   menuContent: {
-    backgroundColor: colors.background.primary,
+    backgroundColor: "#1A1A1A",
     borderRadius: 6,
-    padding: 4,
-    shadowColor: colors.system.shadow,
+    padding: 2,
+    shadowColor: "#FFFFFF",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 3,
-    width: 120,
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 8,
     borderRadius: 4,
   },
   menuItemText: {
     marginLeft: 8,
     fontSize: 14,
-    color: colors.text.primary,
-    fontWeight: '500',
+    color: "white",
+    fontWeight: "500",
   },
 });
 

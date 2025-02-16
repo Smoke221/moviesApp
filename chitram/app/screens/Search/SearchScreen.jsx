@@ -26,7 +26,7 @@ const POSTER_WIDTH = width / 3 - 16; // 3 columns with spacing
 const POSTER_HEIGHT = POSTER_WIDTH * 1.5; // 3:2 aspect ratio
 
 // Default image for missing posters
-const DEFAULT_POSTER = require('../../../assets/images/default_poster.png');
+const DEFAULT_POSTER = require("../../../assets/images/default_poster.png");
 
 const fetchMovies = async (endpoint, params = {}) => {
   try {
@@ -80,13 +80,16 @@ const UpcomingMovieItem = React.memo(({ movie, onPress }) => {
     : DEFAULT_POSTER;
 
   return (
-    <TouchableOpacity onPress={() => onPress(movie)} style={styles.upcomingItem}>
-      <Image 
+    <TouchableOpacity
+      onPress={() => onPress(movie)}
+      style={styles.upcomingItem}
+    >
+      <Image
         source={posterSource}
         style={styles.upcomingPoster}
         defaultSource={DEFAULT_POSTER}
         onError={(e) => {
-          console.log('Image load error:', e.nativeEvent.error);
+          console.log("Image load error:", e.nativeEvent.error);
         }}
       />
     </TouchableOpacity>
@@ -101,12 +104,12 @@ const MovieItem = React.memo(({ movie, onPress }) => {
 
   return (
     <TouchableOpacity onPress={() => onPress(movie)} style={styles.movieItem}>
-      <Image 
+      <Image
         source={posterSource}
         style={styles.moviePoster}
         defaultSource={DEFAULT_POSTER}
         onError={(e) => {
-          console.log('Image load error:', e.nativeEvent.error);
+          console.log("Image load error:", e.nativeEvent.error);
         }}
       />
     </TouchableOpacity>
@@ -336,7 +339,7 @@ export default function SearchScreen({ navigation }) {
           <Ionicons
             name="search"
             size={20}
-            color={colors.text.input}
+            color={"white"}
             style={{ paddingHorizontal: 5 }}
           />
           <TextInput
@@ -345,6 +348,7 @@ export default function SearchScreen({ navigation }) {
             value={searchQuery}
             onChangeText={handleTextChange}
             autoCorrect={false}
+            placeholderTextColor="white"
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity
@@ -400,7 +404,7 @@ export default function SearchScreen({ navigation }) {
               style={styles.tabBar}
               labelStyle={styles.tabLabel}
               activeColor={colors.primary}
-              inactiveColor={colors.text.input}
+              inactiveColor={"white"}
             />
           )}
         />
@@ -412,17 +416,17 @@ export default function SearchScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: "black",
   },
   searchContainer: {
     padding: 8,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: "black",
     borderColor: colors.border.light,
   },
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.background.light,
+    backgroundColor: "black",
     borderRadius: 8,
     padding: 6,
     borderWidth: 1,
@@ -432,10 +436,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 8,
     fontSize: 16,
-    color: colors.text.primary,
+    color: "white",
   },
   tabBar: {
-    backgroundColor: colors.background.secondary,
+    backgroundColor: "black",
     elevation: 0,
   },
   tabLabel: {

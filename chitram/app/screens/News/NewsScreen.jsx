@@ -138,7 +138,7 @@ export default function NewsScreen() {
         <View style={styles.contentWrapper}>
           <Text style={styles.title}>{item.title}</Text>
           <View style={styles.contentBox}>
-            <Text style={styles.content} numberOfLines={8}>
+            <Text style={styles.content} numberOfLines={10}>
               {item.content}
             </Text>
           </View>

@@ -21,11 +21,38 @@ const { width, height } = Dimensions.get('window');
 
 const fetchNews = async () => {
   try {
-    const response = await axios.get('http://16.171.111.246:5000/latest-articles');
-    console.log(response.data.articles.length)
+    const response = await axios.get('http://16.171.111.246:5000/latest-articles', {
+      timeout: 10000, // 10 seconds timeout
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.data || !response.data.articles) {
+      console.error('Invalid response structure:', response);
+      return [];
+    }
+    
+    console.log(`Fetched ${response.data.articles.length} news articles`);
     return response.data.articles;
   } catch (error) {
-    console.log(error);
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.error('Server Error:', {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers
+      });
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error('Network Error: No response received', error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.error('Request Setup Error:', error.message);
+    }
+    
     return [];
   }
 }

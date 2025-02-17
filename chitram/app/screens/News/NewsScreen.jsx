@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   StatusBar,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import colors from '../../theme/colors';
 import axios from 'axios';
@@ -62,12 +63,15 @@ export default function NewsScreen() {
   const [selectedUrl, setSelectedUrl] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);  
   const flatListRef = useRef(null);
 
   const loadNews = useCallback(async (showRefresh = false) => {
     try {
       if (showRefresh) {
         setRefreshing(true);
+      } else {
+        setLoading(true);  
       }
       const articles = await fetchNews();
       setNewsArticles(articles);
@@ -76,6 +80,8 @@ export default function NewsScreen() {
     } finally {
       if (showRefresh) {
         setRefreshing(false);
+      } else {
+        setLoading(false);  
       }
     }
   }, []);
@@ -140,6 +146,18 @@ export default function NewsScreen() {
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
           <Text style={styles.backButtonText}>Back to News</Text>
         </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator 
+          size="large" 
+          color={colors.primary} 
+        />
+        <Text style={styles.loadingText}>Loading News...</Text>
       </View>
     );
   }
@@ -380,5 +398,16 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginTop: 2,
     letterSpacing: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000000',
+  },
+  loadingText: {
+    color: colors.primary,
+    marginTop: 16,
+    fontSize: 16,
   },
 });

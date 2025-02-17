@@ -630,17 +630,16 @@ const MovieDetailsScreen = ({ route, navigation }) => {
             <View style={[styles.section, styles.lastSection]}>
               <View style={styles.similarMoviesSectionHeader}>
                 <Text style={styles.sectionTitle}>Similar Movies</Text>
-                {/* <TouchableOpacity 
-                  onPress={() => {
-                    // TODO: Navigate to a full list of similar movies if needed
-                    console.log('Show all similar movies');
-                  }}
-                >
-                  <Text style={styles.seeAllText}>See All</Text>
-                </TouchableOpacity> */}
               </View>
               <FlatList
-                data={details.similar.results.slice(0, 10)} // Limit to 10 similar movies
+                data={details.similar.results
+                  .filter(movie => movie.vote_count)
+                  .sort((a, b) => {
+                    const dateA = new Date(a.vote_count);
+                    const dateB = new Date(b.vote_count);
+                    return dateB - dateA;
+                  })
+                  .slice(0, 10)} // Limit to 10 similar movies
                 renderItem={renderSimilarMovieItem}
                 keyExtractor={(item) => item.id.toString()}
                 horizontal

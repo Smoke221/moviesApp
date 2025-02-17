@@ -12,11 +12,13 @@ import {
   Animated,
   WebView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { TMDB_API_KEY } from "../../services/tmdbApi";
 import colors from "../../theme/colors";
+import { fetchMovieRatings } from '../../services/omdbApi';
 
 const { width } = Dimensions.get("window");
 const BACKDROP_HEIGHT = width * 0.5625; // 16:9 aspect ratio
@@ -29,6 +31,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
   const { movie } = route.params;
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [ratings, setRatings] = useState(null);
   const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -65,24 +68,20 @@ const MovieDetailsScreen = ({ route, navigation }) => {
             ),
           ]);
 
-        // const [imdbRatingResponse] = await Promise.all([
-        //   axios.get(
-        //     `https://api.themoviedb.org/3/find/${externalIdsResponse.data.imdb_id}`,
-        //     {
-        //       headers: {
-        //         Authorization: `Bearer ${TMDB_API_KEY}`,
-        //         "Content-Type": "application/json",
-        //       },
-        //     }
-        //   ),
-        // ]);
+        const imdbId = externalIdsResponse.data.imdb_id;
+        
+        // Fetch OMDB ratings
+        const omdbRatings = imdbId ? await fetchMovieRatings(imdbId) : null;
 
         setDetails({
           ...detailsResponse.data,
           watchProviders: watchProvidersResponse.data.results,
-          // imdbRating: imdbRatingResponse.data.imdbRating,
-          imdbId: externalIdsResponse.data.imdb_id,
+          imdbId: imdbId,
         });
+
+        if (omdbRatings) {
+          setRatings(omdbRatings);
+        }
       } catch (error) {
         console.error("Error fetching movie details:", error);
       } finally {
@@ -150,6 +149,70 @@ const MovieDetailsScreen = ({ route, navigation }) => {
       </Text>
     </View>
   );
+
+  const renderSimilarMovieItem = ({ item }) => (
+    <TouchableOpacity 
+      style={styles.similarMovieCard}
+      onPress={() => navigation.push('MovieDetails', { movie: item })}
+    >
+      <View style={styles.similarMovieImageContainer}>
+        <Image
+          source={{ uri: `https://image.tmdb.org/t/p/w342${item.poster_path}` }}
+          style={styles.similarMovieImage}
+          defaultSource={DEFAULT_POSTER}
+          onError={(e) => {
+            console.log("Similar movie poster load error:", e.nativeEvent.error);
+          }}
+        />
+        <View style={styles.similarMovieOverlay}>
+          <Text style={styles.similarMovieTitle} numberOfLines={2}>
+            {item.title}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderRatingsSection = () => {
+    if (!ratings) return null;
+
+    return (
+      <View style={styles.ratingsContainer}>
+        {ratings.imdbRating && (
+          <View style={styles.ratingItem}>
+            <Image 
+              source={require('../../../assets/images/imdb.png')} 
+              style={styles.ratingLogo} 
+              resizeMode="contain"
+            />
+            <Text style={styles.ratingText}>{ratings.imdbRating}/10</Text>
+          </View>
+        )}
+        {ratings.rottenTomatoesRating && (
+          <View style={styles.ratingItem}>
+            <Image 
+              source={require('../../../assets/images/rotten-tomatoes-logo.png')} 
+              style={styles.ratingLogo} 
+              resizeMode="contain"
+            />
+            <Text style={styles.ratingText}>{ratings.rottenTomatoesRating}</Text>
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator 
+          size="large" 
+          color={colors.primary} 
+          style={styles.loadingIndicator}
+        />
+      </View>
+    );
+  }
 
   if (!details) {
     return null;
@@ -247,16 +310,18 @@ const MovieDetailsScreen = ({ route, navigation }) => {
             </View>
           </View>
 
-          <View>
-            <View style={styles.genresContainer}>
+          {renderRatingsSection()}
+
+          {/* Genre Section */}
+          {details.genres && details.genres.length > 0 && (
+            <View style={styles.genreContainer}>
               {details.genres.map((genre) => (
                 <View key={genre.id} style={styles.genreTag}>
                   <Text style={styles.genreText}>{genre.name}</Text>
                 </View>
               ))}
             </View>
-          </View>
-
+          )}
           {/* Overview Section */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Overview</Text>
@@ -531,7 +596,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
 
           {/* Production Companies */}
           {details.production_companies.length > 0 && (
-            <View style={[styles.section, styles.lastSection]}>
+            <View style={styles.section}>
               <Text style={styles.sectionTitle}>Production Companies</Text>
               <View style={styles.companiesContainer}>
                 {details.production_companies.map((company) => (
@@ -557,6 +622,33 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                   </View>
                 ))}
               </View>
+            </View>
+          )}
+
+          {/* Similar Movies */}
+          {details.similar && details.similar.results.length > 0 && (
+            <View style={[styles.section, styles.lastSection]}>
+              <View style={styles.similarMoviesSectionHeader}>
+                <Text style={styles.sectionTitle}>Similar Movies</Text>
+                {/* <TouchableOpacity 
+                  onPress={() => {
+                    // TODO: Navigate to a full list of similar movies if needed
+                    console.log('Show all similar movies');
+                  }}
+                >
+                  <Text style={styles.seeAllText}>See All</Text>
+                </TouchableOpacity> */}
+              </View>
+              <FlatList
+                data={details.similar.results.slice(0, 10)} // Limit to 10 similar movies
+                renderItem={renderSimilarMovieItem}
+                keyExtractor={(item) => item.id.toString()}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.similarMoviesList}
+                snapToInterval={200} // Adjust based on your card width
+                decelerationRate="fast"
+              />
             </View>
           )}
         </View>
@@ -997,6 +1089,97 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
     marginBottom: 16,
+  },
+  similarMoviesSection: {
+    marginBottom: 24,
+  },
+  similarMoviesSectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  seeAllText: {
+    fontSize: 14,
+    color: colors.primary,
+    fontWeight: "500",
+  },
+  similarMovieCard: {
+    width: 150,
+    height: 220,
+    marginRight: 16,
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  similarMovieImageContainer: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  similarMovieImage: {
+    width: "100%",
+    height: "100%",
+  },
+  similarMovieOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    width: "100%",
+    padding: 8,
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  similarMovieTitle: {
+    fontSize: 14,
+    color: "white",
+    fontWeight: "500",
+  },
+  similarMovieRatingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  similarMovieRating: {
+    fontSize: 12,
+    color: "white",
+    marginLeft: 4,
+  },
+  similarMoviesList: {
+    paddingVertical: 8,
+  },
+  ratingsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    gap: 20,
+  },
+  ratingItem: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  ratingLogo: {
+    width: 30,
+    height: 16,
+    marginRight: 6,
+  },
+  ratingText: {
+    fontSize: 14,
+    color: "white",
+    fontWeight: "500",
+  },
+  metascoreText: {
+    fontSize: 12,
+    color: colors.text.secondary,
+    marginRight: 4,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "black",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingIndicator: {
+    transform: [{ scale: 1.5 }], // Make the indicator slightly larger
   },
 });
 

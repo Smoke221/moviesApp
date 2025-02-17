@@ -21,7 +21,7 @@ const { width, height } = Dimensions.get('window');
 
 const fetchNews = async () => {
   try {
-    const response = await axios.get('http://16.171.111.246:5000/latest-articles', {
+    const response = await axios.get('https://api.slenterprisess.com/latest-articles', {
       timeout: 10000, // 10 seconds timeout
       headers: {
         'Accept': 'application/json',

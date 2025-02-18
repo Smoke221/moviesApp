@@ -1,46 +1,31 @@
-// import feed from "../../../feed";
-import React, { useState } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { feed } from '../../data/feed';
-import Post from "./Posts/Post";
+import React from "react";
+import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
+import TopImdbMovies from "./TopImdbMovies";
+import TrendingMovies from "./TrendingMovies";
+import TrendingNews from "./TrendingNews";
 
 const HomeScreen = () => {
-  const [showAllReplies, setShowAllReplies] = useState(false);
-
-  const handleToggleReplies = () => {
-    setShowAllReplies((prevState) => !prevState);
-  };
-
-  const renderItem = ({ item }) => {
-    return (
-      <Post
-        item={item}
-        showAllReplies={showAllReplies}
-        handleToggleReplies={handleToggleReplies}
-      />
-    );
-  };
-
   return (
-    <FlatList
-      data={feed}
-      renderItem={renderItem}
-      keyExtractor={(item, index) => index.toString()}
-      contentContainerStyle={styles.container}
-    />
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <TrendingNews />
+        <TopImdbMovies />
+        <TrendingMovies />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 3,
-    backgroundColor:"black",
+    flex: 1,
+    backgroundColor: "#000",
+  },
+  scrollView: {
+    flex: 1,
   },
 });
 

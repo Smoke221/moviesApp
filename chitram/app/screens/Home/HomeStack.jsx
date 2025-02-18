@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './HomeScreen';
-import PostDetail from '../PostDetail/PostDetail';
+import PostDetail from './Posts/PostDetail';
 import colors from '../../theme/colors';
 
 const Stack = createNativeStackNavigator();

@@ -11,8 +11,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import colors from "../../theme/colors";
 import { useNavigation } from "@react-navigation/native";
+import colors from "../../../theme/colors";
 
 const { width } = Dimensions.get("window");
 

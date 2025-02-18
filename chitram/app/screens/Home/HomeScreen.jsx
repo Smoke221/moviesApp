@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Post from "./Post";
 import { feed } from '../../data/feed';
+import Post from "./Posts/Post";
 
 const HomeScreen = () => {
   const [showAllReplies, setShowAllReplies] = useState(false);

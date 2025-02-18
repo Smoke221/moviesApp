@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import colors from '../../theme/colors';
+import colors from '../../../theme/colors';
 
 const { width, height } = Dimensions.get('window');
 

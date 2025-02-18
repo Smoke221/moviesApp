@@ -10,7 +10,6 @@ import {
   Linking,
   FlatList,
   Animated,
-  WebView,
   Alert,
   ActivityIndicator,
 } from "react-native";
@@ -19,6 +18,7 @@ import axios from "axios";
 import { TMDB_API_KEY } from "../../services/tmdbApi";
 import colors from "../../theme/colors";
 import { fetchMovieRatings } from '../../services/omdbApi';
+import VideoPlayerModal from '../../components/VideoPlayerModal';
 
 const { width } = Dimensions.get("window");
 const BACKDROP_HEIGHT = width * 0.5625; // 16:9 aspect ratio
@@ -32,6 +32,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [ratings, setRatings] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
   const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -202,6 +203,14 @@ const MovieDetailsScreen = ({ route, navigation }) => {
     );
   };
 
+  const handleVideoPress = (video) => {
+    setSelectedVideo(video);
+  };
+
+  const handleCloseVideoModal = () => {
+    setSelectedVideo(null);
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -343,11 +352,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                 return primaryTrailer ? (
                   <TouchableOpacity
                     style={styles.primaryVideoItem}
-                    onPress={() => {
-                      Linking.openURL(
-                        `https://www.youtube.com/watch?v=${primaryTrailer.key}`
-                      );
-                    }}
+                    onPress={() => handleVideoPress(primaryTrailer)}
                   >
                     <Image
                       source={{
@@ -385,11 +390,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                     renderItem={({ item }) => (
                       <TouchableOpacity
                         style={styles.videoItem}
-                        onPress={() => {
-                          Linking.openURL(
-                            `https://www.youtube.com/watch?v=${item.key}`
-                          );
-                        }}
+                        onPress={() => handleVideoPress(item)}
                       >
                         <Image
                           source={{
@@ -670,6 +671,15 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           <Ionicons name="arrow-back" size={16} color="white" />
         </TouchableOpacity>
       </Animated.View>
+
+      {selectedVideo && (
+        <VideoPlayerModal
+          videoKey={selectedVideo.key}
+          title={selectedVideo.name}
+          isVisible={!!selectedVideo}
+          onClose={handleCloseVideoModal}
+        />
+      )}
     </View>
   );
 };
@@ -931,6 +941,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "black",
     fontWeight: "600",
+  },
+  metascoreText: {
+    fontSize: 12,
+    color: colors.text.secondary,
+    marginRight: 4,
   },
   originalLanguage: {
     fontSize: 14,

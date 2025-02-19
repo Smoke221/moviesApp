@@ -19,6 +19,7 @@ import { TMDB_API_KEY } from "../../services/tmdbApi";
 import colors from "../../theme/colors";
 import { fetchMovieRatings } from '../../services/omdbApi';
 import VideoPlayerModal from '../../components/VideoPlayerModal';
+import CastComponent from '../../components/CastComponent';
 
 const { width } = Dimensions.get("window");
 const BACKDROP_HEIGHT = width * 0.5625; // 16:9 aspect ratio
@@ -104,25 +105,6 @@ const MovieDetailsScreen = ({ route, navigation }) => {
     outputRange: [1, 0.9, 0.8],
     extrapolate: "clamp",
   });
-
-  const renderCastItem = ({ item }) => (
-    <View style={styles.castItem}>
-      <Image
-        source={{ uri: `https://image.tmdb.org/t/p/w185${item.profile_path}` }}
-        style={styles.castImage}
-        defaultSource={DEFAULT_POSTER}
-        onError={(e) => {
-          console.log("Cast image load error:", e.nativeEvent.error);
-        }}
-      />
-      <Text style={styles.castName} numberOfLines={2}>
-        {item.name}
-      </Text>
-      <Text style={styles.castCharacter} numberOfLines={1}>
-        {item.character}
-      </Text>
-    </View>
-  );
 
   const renderCrewItem = ({ item }) => (
     <View style={styles.crewItem}>
@@ -535,17 +517,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
 
           {/* Cast Section */}
           {details.credits.cast.length > 0 && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Cast</Text>
-              <FlatList
-                horizontal
-                data={details.credits.cast}
-                keyExtractor={(item) => item.credit_id}
-                renderItem={renderCastItem}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.castList}
-              />
-            </View>
+            <CastComponent cast={details.credits.cast} />
           )}
 
           {/* Crew Section */}
@@ -813,30 +785,6 @@ const styles = StyleSheet.create({
   productionValue: {
     color: colors.text.primary,
     fontWeight: "500",
-  },
-  castList: {
-    paddingVertical: 8,
-  },
-  castItem: {
-    width: 100,
-    marginRight: 16,
-  },
-  castImage: {
-    width: 100,
-    height: 150,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  castName: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "white",
-    textAlign: "center",
-  },
-  castCharacter: {
-    fontSize: 12,
-    color: colors.primary,
-    textAlign: "center",
   },
   crewItem: {
     backgroundColor: "black",

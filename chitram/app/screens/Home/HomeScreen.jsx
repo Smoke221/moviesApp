@@ -3,6 +3,7 @@ import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import TopImdbMovies from "./TopImdbMovies";
 import TrendingMovies from "./TrendingMovies";
 import TrendingNews from "./TrendingNews";
+import NowPlayingMoviesSection from "./NowPlayingMoviesSection";
 
 const HomeScreen = () => {
   return (
@@ -12,6 +13,7 @@ const HomeScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <TrendingNews />
+        <NowPlayingMoviesSection />
         <TopImdbMovies />
         <TrendingMovies />
       </ScrollView>

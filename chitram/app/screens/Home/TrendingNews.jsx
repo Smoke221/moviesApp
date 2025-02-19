@@ -9,12 +9,16 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native";
+import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 
 const { width } = Dimensions.get("window");
+const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
 
 const TrendingNews = () => {
   const [trendingNews, setTrendingNews] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -32,8 +36,10 @@ const TrendingNews = () => {
         );
         setTrendingNews(newsWithImage);
       }
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching trending news:", error);
+      setLoading(false);
     }
   };
 
@@ -42,6 +48,34 @@ const TrendingNews = () => {
       navigation.navigate("NewsScreen");
     }
   };
+
+  const renderSkeleton = () => (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <ShimmerPlaceholder
+          style={styles.skeletonTitle}
+          shimmerColors={["#2A2A2A", "#1A1A1A", "#2A2A2A"]}
+        />
+      </View>
+      <ShimmerPlaceholder
+        style={styles.image}
+        shimmerColors={["#2A2A2A", "#1A1A1A", "#2A2A2A"]}
+      />
+      <LinearGradient
+        colors={["transparent", "rgba(0,0,0,0.8)"]}
+        style={styles.gradient}
+      >
+        <ShimmerPlaceholder
+          style={styles.skeletonNewsTitle}
+          shimmerColors={["#2A2A2A", "#1A1A1A", "#2A2A2A"]}
+        />
+      </LinearGradient>
+    </View>
+  );
+
+  if (loading) {
+    return renderSkeleton();
+  }
 
   if (!trendingNews) return null;
 
@@ -99,17 +133,28 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: "50%",
-    justifyContent: "flex-end",
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   newsTitle: {
-    color: "#fff",
+    color: "white",
     fontSize: 16,
-    fontWeight: "bold",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
+    fontWeight: "600",
+  },
+  skeletonTitle: {
+    width: 100,
+    height: 20,
+    borderRadius: 4,
+    marginLeft: 16,
+  },
+  skeletonNewsTitle: {
+    width: "90%",
+    height: 16,
+  },
+  skeletonText: {
+    width: "90%",
+    height: 20,
+    marginVertical: 5,
   },
 });
 

@@ -17,7 +17,7 @@ const HomeStack = () => {
         contentStyle: { backgroundColor: colors.background.primary },
       }}
     >
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="MovieDetails" component={MovieDetailsScreen} />
       <Stack.Screen name="TvSeriesDetails" component={TvSeriesDetailsScreen} />
       <Stack.Screen name="TopMovies" component={TopImdbMovies} />

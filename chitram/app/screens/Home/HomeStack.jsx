@@ -6,6 +6,7 @@ import MovieDetailsScreen from "../Search/MovieDetailsScreen";
 import TvSeriesDetailsScreen from "../Search/TvSeriesDetailsScreen";
 import HomeScreen from "./HomeScreen";
 import TopImdbMovies from "./TopImdbMovies";
+import CastDetailsScreen from "@/app/components/CastDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ const HomeStack = () => {
       <Stack.Screen name="TvSeriesDetails" component={TvSeriesDetailsScreen} />
       <Stack.Screen name="TopMovies" component={TopImdbMovies} />
       <Stack.Screen name="NewsScreen" component={NewsScreen} />
+      <Stack.Screen name="CastDetails" component={CastDetailsScreen} />
     </Stack.Navigator>
   );
 };

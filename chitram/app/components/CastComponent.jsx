@@ -1,11 +1,20 @@
 import React from 'react';
-import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
-// import { DEFAULT_POSTER } from '../constants/Images';
+import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import colors from '../theme/colors';
 
 const CastComponent = ({ cast }) => {
+  const navigation = useNavigation();
+
+  const handleCastPress = (castMember) => {
+    navigation.navigate('CastDetails', { castMember });
+  };
+
   const renderCastItem = ({ item }) => (
-    <View style={styles.castItem}>
+    <TouchableOpacity 
+      style={styles.castItem} 
+      onPress={() => handleCastPress(item)}
+    >
       <Image
         source={{ uri: `https://image.tmdb.org/t/p/w185${item.profile_path}` }}
         style={styles.castImage}
@@ -20,7 +29,7 @@ const CastComponent = ({ cast }) => {
       <Text style={styles.castCharacter} numberOfLines={1}>
         {item.character}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 
   if (!cast || cast.length === 0) {

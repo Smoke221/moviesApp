@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import NowPlayingMoviesSection from "./NowPlayingMoviesSection";
 import PlayingAroundYou from "./PlayingAroundYou";
-import TopImdbMovies from "./TopImdbMovies";
-import TrendingMovies from "./TrendingMovies";
+import TopImdbMovies from "./TopAll";
+import TrendingMovies from "./TopTV";
 import TrendingNews from "./TrendingNews";
 
 const HomeScreen = () => {

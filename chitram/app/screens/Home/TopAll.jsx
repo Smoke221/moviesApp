@@ -32,7 +32,7 @@ const TopImdbMovies = () => {
       };
 
       const response = await axios.get(
-        "https://api.themoviedb.org/3/trending/all/day",
+        "https://api.themoviedb.org/3/trending/all/day?region=IN",
         {
           ...config,
           params: {

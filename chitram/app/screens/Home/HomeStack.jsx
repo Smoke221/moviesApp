@@ -5,7 +5,7 @@ import NewsScreen from "../News/NewsScreen";
 import MovieDetailsScreen from "../Search/MovieDetailsScreen";
 import TvSeriesDetailsScreen from "../Search/TvSeriesDetailsScreen";
 import HomeScreen from "./HomeScreen";
-import TopImdbMovies from "./TopImdbMovies";
+import TopImdbMovies from "./TopAll";
 import CastDetailsScreen from "@/app/components/CastDetailsScreen";
 
 const Stack = createNativeStackNavigator();

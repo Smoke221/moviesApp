@@ -2,19 +2,24 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
-    Dimensions,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 
 const { width } = Dimensions.get("window");
 const API_URL = "http://10.0.18.177:8090/city-movies";
+const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
 
 const PlayingAroundYou = ({ onResultsFetched }) => {
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCityMovies = async () => {
@@ -35,11 +40,50 @@ const PlayingAroundYou = ({ onResultsFetched }) => {
       } catch (error) {
         console.error("Error fetching city movies:", error);
         onResultsFetched(true); // API request failed
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCityMovies();
   }, []);
+
+  const renderSkeleton = () => (
+    <View style={styles.container}>
+      <ShimmerPlaceholder
+        style={styles.skeletonHeaderTitle}
+        shimmerColors={["#2A2A2A", "#1A1A1A", "#2A2A2A"]}
+      />
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.movieScrollView}
+      >
+        {[...Array(5)].map((_, index) => (
+          <View key={index} style={styles.movieItem}>
+            <ShimmerPlaceholder
+              style={styles.skeletonMoviePoster}
+              shimmerColors={["#2A2A2A", "#1A1A1A", "#2A2A2A"]}
+            />
+            <View style={styles.overlayContainer}>
+              <ShimmerPlaceholder
+                style={styles.skeletonLanguageText}
+                shimmerColors={["#2A2A2A", "#1A1A1A", "#2A2A2A"]}
+              />
+              <ShimmerPlaceholder
+                style={styles.skeletonRatingText}
+                shimmerColors={["#2A2A2A", "#1A1A1A", "#2A2A2A"]}
+              />
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+
+  if (loading) {
+    return renderSkeleton();
+  }
 
   if (movies.length === 0) {
     return null;
@@ -61,10 +105,21 @@ const PlayingAroundYou = ({ onResultsFetched }) => {
               resizeMode="cover"
             />
             <View style={styles.overlayContainer}>
-              <Text style={styles.languageText}>
-                {movie.languages.join(", ")}
-              </Text>
-              <Text style={styles.ratingText}>{movie.rating}</Text>
+              <View style={styles.languageContainer}>
+                {movie.languages.slice(0, 2).map((language, index) => (
+                  <Text key={language} style={styles.languageText}>
+                    {language}
+                  </Text>
+                ))}
+                {movie.languages.length > 2 && (
+                  <Text style={styles.languageText}>
+                    +{movie.languages.length - 2}
+                  </Text>
+                )}
+              </View>
+              {movie.rating && (
+                <Text style={styles.ratingText}>{movie.rating}</Text>
+              )}
             </View>
           </View>
         ))}
@@ -98,24 +153,60 @@ const styles = StyleSheet.create({
   },
   overlayContainer: {
     position: "absolute",
-    top: 5,
-    left: 5,
-    right: 5,
+    top: 8,
+    left: 8,
+    right: 8,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  languageContainer: {
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    gap: 4,
+    maxWidth: "75%",
   },
   languageText: {
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
     color: "white",
-    fontSize: 12,
-    padding: 5,
-    borderRadius: 5,
+    fontSize: 10,
+    paddingVertical: 3,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+    overflow: "hidden",
+    fontWeight: "600",
+    textTransform: "uppercase",
   },
   ratingText: {
-    backgroundColor: "rgba(255, 165, 0, 0.8)",
-    color: "white",
-    fontSize: 12,
-    padding: 5,
+    backgroundColor: "rgba(255, 215, 0, 0.9)",
+    fontSize: 11,
+    paddingVertical: 3,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+    overflow: "hidden",
+    fontWeight: "700",
+    color: "#000",
+  },
+  skeletonHeaderTitle: {
+    width: 200,
+    height: 20,
+    borderRadius: 4,
+    marginLeft: 15,
+    marginBottom: 10,
+  },
+  skeletonMoviePoster: {
+    width: "100%",
+    height: width * 0.6,
+    borderRadius: 10,
+  },
+  skeletonLanguageText: {
+    width: 50,
+    height: 20,
+    borderRadius: 5,
+  },
+  skeletonRatingText: {
+    width: 30,
+    height: 20,
     borderRadius: 5,
   },
 });

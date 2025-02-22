@@ -77,7 +77,18 @@ const TrendingNews = () => {
     return renderSkeleton();
   }
 
-  if (!trendingNews) return null;
+  if (!trendingNews) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>📰 Trending</Text>
+        </View>
+        <View style={styles.imagePlaceholder}>
+          <Text style={styles.noDataText}>No trending news available</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <TouchableOpacity onPress={handleNewsPress}>
@@ -128,6 +139,13 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
   },
+  imagePlaceholder: {
+    width: "100%",
+    height: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#2A2A2A",
+  },
   gradient: {
     position: "absolute",
     bottom: 0,
@@ -155,6 +173,11 @@ const styles = StyleSheet.create({
     width: "90%",
     height: 20,
     marginVertical: 5,
+  },
+  noDataText: {
+    color: "white",
+    fontSize: 16,
+    textAlign: "center",
   },
 });
 

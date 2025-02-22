@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
+import NowPlayingMoviesSection from "./NowPlayingMoviesSection";
+import PlayingAroundYou from "./PlayingAroundYou";
 import TopImdbMovies from "./TopImdbMovies";
 import TrendingMovies from "./TrendingMovies";
 import TrendingNews from "./TrendingNews";
-import NowPlayingMoviesSection from "./NowPlayingMoviesSection";
 
 const HomeScreen = () => {
+  const [dataFetched, setDataFetched] = useState(false);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -13,7 +16,8 @@ const HomeScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <TrendingNews />
-        <NowPlayingMoviesSection />
+        <PlayingAroundYou onResultsFetched={setDataFetched} />
+        {dataFetched && <NowPlayingMoviesSection />}
         <TopImdbMovies />
         <TrendingMovies />
       </ScrollView>

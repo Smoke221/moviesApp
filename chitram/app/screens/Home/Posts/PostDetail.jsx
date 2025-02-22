@@ -33,7 +33,7 @@ const Comment = ({ comment }) => {
               <Ionicons 
                 name={showReplies ? "chevron-up" : "chevron-down"} 
                 size={16} 
-                color={colors.text.light}
+                color={colors.secondary}
               />
               <Text style={styles.replyCount}>
                 {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
@@ -44,11 +44,11 @@ const Comment = ({ comment }) => {
         <Text style={styles.commentText}>{comment.comment}</Text>
         <View style={styles.commentFooter}>
           <TouchableOpacity style={styles.commentAction}>
-            <Ionicons name="heart-outline" size={14} color={colors.text.light} />
+            <Ionicons name="heart-outline" size={14} color={colors.secondary} />
             <Text style={styles.actionText}>{comment.likes}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.commentAction}>
-            <Ionicons name="chatbubble-outline" size={14} color={colors.text.light} />
+            <Ionicons name="chatbubble-outline" size={14} color={colors.secondary} />
             <Text style={styles.actionText}>Reply</Text>
           </TouchableOpacity>
         </View>
@@ -153,7 +153,7 @@ const PostDetail = ({ route, navigation }) => {
       {/* Bottom Action Bar */}
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.commentInput}>
-          <Ionicons name="chatbubble-outline" size={20} color={colors.text.light} />
+          <Ionicons name="chatbubble-outline" size={20} color={colors.secondary} />
           <Text style={styles.commentInputText}>Add a comment...</Text>
         </TouchableOpacity>
         <View style={styles.bottomActions}>
@@ -161,14 +161,14 @@ const PostDetail = ({ route, navigation }) => {
             <Ionicons 
               name="heart-outline" 
               size={24} 
-              color={colors.text.light}
+              color={colors.secondary}
             />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton}>
             <Ionicons 
               name="share-social" 
               size={24} 
-              color={colors.text.light}
+              color={colors.secondary}
             />
           </TouchableOpacity>
         </View>

@@ -339,7 +339,7 @@ export default function SearchScreen({ navigation }) {
           <Ionicons
             name="search"
             size={20}
-            color={"white"}
+            color={colors.primary}
             style={{ paddingHorizontal: 5 }}
           />
           <TextInput
@@ -361,7 +361,7 @@ export default function SearchScreen({ navigation }) {
               <Ionicons
                 name="close-circle"
                 size={20}
-                color={colors.text.secondary}
+                color={colors.primary}
               />
             </TouchableOpacity>
           )}
@@ -404,7 +404,7 @@ export default function SearchScreen({ navigation }) {
               style={styles.tabBar}
               labelStyle={styles.tabLabel}
               activeColor={colors.primary}
-              inactiveColor={"white"}
+              inactiveColor={colors.secondary}
             />
           )}
         />

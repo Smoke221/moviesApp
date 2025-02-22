@@ -1,4 +1,5 @@
 import { TMDB_API_KEY } from "@/app/services/tmdbApi";
+import colors from "@/app/theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -87,7 +88,7 @@ const TopImdbMovies = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>🏆 Trending Now</Text>
+        <Text style={styles.title}>Popular Now</Text>
         {/* <TouchableOpacity onPress={handleViewAll}>
           <Text style={styles.viewAll}>View All</Text>
         </TouchableOpacity> */}
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#fff",
+    color: colors.primary,
   },
   viewAll: {
     color: "#007AFF",
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   rankText: {
-    color: "#fff",
+    color: colors.secondary,
     fontSize: 12,
     fontWeight: "bold",
   },

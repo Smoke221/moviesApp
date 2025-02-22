@@ -88,7 +88,7 @@ const Post = ({ item }) => {
           <MaterialCommunityIcons
             name="dots-vertical"
             size={18}
-            color={colors.text.light}
+            color={colors.secondary}
           />
         </TouchableOpacity>
       </View>
@@ -119,7 +119,7 @@ const Post = ({ item }) => {
               <Ionicons
                 name="thumbs-up-outline"
                 size={18}
-                color={colors.text.light}
+                color={colors.secondary}
               />
               <Text style={styles.likeCount}>{item.likes}</Text>
             </View>
@@ -128,14 +128,14 @@ const Post = ({ item }) => {
             <Ionicons
               name="chatbubble-outline"
               size={16}
-              color={colors.text.light}
+              color={colors.secondary}
             />
           </TouchableOpacity>
           <TouchableOpacity style={styles.engagementButton}>
             <Ionicons
               name="arrow-redo-outline"
               size={18}
-              color={colors.text.light}
+              color={colors.secondary}
             />
           </TouchableOpacity>
         </View>
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     borderTopColor: "rgba(255, 255, 255, 0.1)",
   },
   commentCount: {
-    color: colors.text.light,
+    color: colors.secondary,
     fontSize: 12,
     fontWeight: "600",
   },
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   likeCount: {
-    color: colors.text.light,
+    color: colors.secondary,
     fontSize: 12,
   },
   modalOverlay: {

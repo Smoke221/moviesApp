@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import NowPlayingMoviesSection from "./NowPlayingMoviesSection";
 import PlayingAroundYou from "./PlayingAroundYou";
-import TopImdbMovies from "./TopAll";
+import TopImdbMovies from "./TrendingAll";
 import TrendingMovies from "./TopTV";
 import TrendingNews from "./TrendingNews";
+import colors from "@/app/theme/colors";
 
 const HomeScreen = () => {
   const [dataFetched, setDataFetched] = useState(false);
@@ -28,7 +29,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,

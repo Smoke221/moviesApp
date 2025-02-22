@@ -1,3 +1,4 @@
+import colors from "@/app/theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
@@ -28,7 +29,7 @@ const TrendingNews = () => {
   const fetchTrendingNews = async () => {
     try {
       const response = await axios.get(
-        "https://api.slenterprisess.com/latest-articles"
+        "http://10.0.18.177:8090/latest-articles"
       );
       if (response.data.articles && response.data.articles.length > 0) {
         const newsWithImage = response.data.articles.find(
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 12,
     overflow: "hidden",
-    backgroundColor: "#1A1A1A",
+    backgroundColor: colors.primary,
   },
   header: {
     flexDirection: "row",
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#fff",
+    color: colors.secondary,
   },
   image: {
     width: "100%",
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   newsTitle: {
-    color: "white",
+    color: colors.secondary,
     fontSize: 16,
     fontWeight: "600",
   },
@@ -175,7 +176,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   noDataText: {
-    color: "white",
+    color: colors.secondary,
     fontSize: 16,
     textAlign: "center",
   },

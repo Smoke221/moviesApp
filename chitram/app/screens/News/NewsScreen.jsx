@@ -22,7 +22,7 @@ const { width, height } = Dimensions.get('window');
 
 const fetchNews = async () => {
   try {
-    const response = await axios.get('https://api.slenterprisess.com/latest-articles', {
+    const response = await axios.get('http://10.0.18.177:8090/latest-articles', {
       timeout: 10000, // 10 seconds timeout
       headers: {
         'Accept': 'application/json',
@@ -143,7 +143,7 @@ export default function NewsScreen() {
           style={styles.backButton} 
           onPress={handleBack}
         >
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+          <Ionicons name="arrow-back" size={24} color={colors.primary} />
           <Text style={styles.backButtonText}>Back to News</Text>
         </TouchableOpacity>
       </View>
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   backButtonText: {
-    color: '#FFFFFF',
+    color: colors.primary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   readMoreButton: {
-    backgroundColor: 'rgba(51, 51, 51, 0.9)',
+    backgroundColor: '#ff8e5d',
     paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 25,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   readMoreText: {
-    color: '#FFFFFF',
+    color: colors.background,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     height: '50%',
     backgroundColor: '#000000',
     borderTopWidth: 1,
-    borderTopColor: '#FFFFFF',
+    borderTopColor: colors.secondary,
   },
   contentWrapper: {
     padding: 15,
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
   },
   floatingBadgeContainer: {
     position: 'absolute',
-    bottom: -15,
+    bottom: -12,
     right: 16,
     backgroundColor: '#000000',
     borderRadius: 8,
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   },
   badgeInner: {
     borderWidth: 1,
-    borderColor: colors.accent.primary,
+    borderColor: colors.primary,
     borderRadius: 6,
     padding: 4,
     alignItems: 'center',
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
   chitramText: {
     fontSize: 10,
     fontWeight: "800",
-    color: colors.primary,
+    color: colors.secondary,
     letterSpacing: 1,
   },
   tagline: {

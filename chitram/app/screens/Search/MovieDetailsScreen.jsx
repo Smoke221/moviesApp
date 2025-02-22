@@ -17,9 +17,9 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { TMDB_API_KEY } from "../../services/tmdbApi";
 import colors from "../../theme/colors";
-import { fetchMovieRatings } from '../../services/omdbApi';
-import VideoPlayerModal from '../../components/VideoPlayerModal';
-import CastComponent from '../../components/CastComponent';
+import { fetchMovieRatings } from "../../services/omdbApi";
+import VideoPlayerModal from "../../components/VideoPlayerModal";
+import CastComponent from "../../components/CastComponent";
 
 const { width } = Dimensions.get("window");
 const BACKDROP_HEIGHT = width * 0.5625; // 16:9 aspect ratio
@@ -71,7 +71,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           ]);
 
         const imdbId = externalIdsResponse.data.imdb_id;
-        
+
         // Fetch OMDB ratings
         const omdbRatings = imdbId ? await fetchMovieRatings(imdbId) : null;
 
@@ -134,9 +134,9 @@ const MovieDetailsScreen = ({ route, navigation }) => {
   );
 
   const renderSimilarMovieItem = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.similarMovieCard}
-      onPress={() => navigation.push('MovieDetails', { movie: item })}
+      onPress={() => navigation.push("MovieDetails", { movie: item })}
     >
       <View style={styles.similarMovieImageContainer}>
         <Image
@@ -144,7 +144,10 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           style={styles.similarMovieImage}
           defaultSource={DEFAULT_POSTER}
           onError={(e) => {
-            console.log("Similar movie poster load error:", e.nativeEvent.error);
+            console.log(
+              "Similar movie poster load error:",
+              e.nativeEvent.error
+            );
           }}
         />
         <View style={styles.similarMovieOverlay}>
@@ -163,9 +166,9 @@ const MovieDetailsScreen = ({ route, navigation }) => {
       <View style={styles.ratingsContainer}>
         {ratings.imdbRating && (
           <View style={styles.ratingItem}>
-            <Image 
-              source={require('../../../assets/images/imdb.png')} 
-              style={styles.ratingLogo} 
+            <Image
+              source={require("../../../assets/images/imdb.png")}
+              style={styles.ratingLogo}
               resizeMode="contain"
             />
             <Text style={styles.ratingText}>{ratings.imdbRating}/10</Text>
@@ -173,12 +176,14 @@ const MovieDetailsScreen = ({ route, navigation }) => {
         )}
         {ratings.rottenTomatoesRating && (
           <View style={styles.ratingItem}>
-            <Image 
-              source={require('../../../assets/images/rotten-tomatoes-logo.png')} 
-              style={styles.ratingLogo} 
+            <Image
+              source={require("../../../assets/images/rotten-tomatoes-logo.png")}
+              style={styles.ratingLogo}
               resizeMode="contain"
             />
-            <Text style={styles.ratingText}>{ratings.rottenTomatoesRating}</Text>
+            <Text style={styles.ratingText}>
+              {ratings.rottenTomatoesRating}
+            </Text>
           </View>
         )}
       </View>
@@ -196,9 +201,9 @@ const MovieDetailsScreen = ({ route, navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator 
-          size="large" 
-          color={colors.primary} 
+        <ActivityIndicator
+          size="large"
+          color={colors.primary}
           style={styles.loadingIndicator}
         />
       </View>
@@ -289,7 +294,11 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                       {details.adult ? (
                         <Ionicons name="warning" size={20} color="#FF6B6B" />
                       ) : (
-                        <Ionicons name="happy-outline" size={20} color="#4CD964" />
+                        <Ionicons
+                          name="happy-outline"
+                          size={20}
+                          color="#4CD964"
+                        />
                       )}
                     </View>
                     <Text style={styles.adultRatingText}>
@@ -404,52 +413,55 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           {/* Watch Providers Section */}
           {details.watchProviders?.IN && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Streaming On</Text>
-              <View style={styles.watchProvidersContainer}>
-                {details.watchProviders.IN.flatrate?.map((provider) => {
-                  // Map of OTT direct URLs
-                  const ottUrls = {
-                    Netflix: "https://www.netflix.com/browse",
-                    "Amazon Prime Video": "https://www.primevideo.com",
-                    "Disney Plus": "https://www.hotstar.com",
-                    "Apple TV Plus": "https://tv.apple.com",
-                    Hulu: "https://www.hulu.com",
-                    "HBO Max": "https://www.hbomax.com",
-                  };
-
-                  return (
-                    <TouchableOpacity
-                      key={provider.provider_id}
-                      style={styles.providerItem}
-                      onPress={() => {
-                        const directUrl = ottUrls[provider.provider_name];
-                        const url = directUrl || details.watchProviders.IN.link;
-                        Linking.canOpenURL(url).then((supported) => {
-                          if (supported) {
-                            Linking.openURL(url);
-                          }
-                        });
-                      }}
-                    >
-                      <Image
-                        source={{
-                          uri: `https://image.tmdb.org/t/p/original${provider.logo_path}`,
-                        }}
-                        style={styles.providerLogo}
-                      />
-                      <Text style={styles.providerName}>
-                        {provider.provider_name}
-                      </Text>
-                      {details.watchProviders.IN.flatrate_price && (
-                        <Text style={styles.providerPrice}>
-                          ₹{details.watchProviders.IN.flatrate_price}/month
-                        </Text>
-                      )}
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-
+              {details.watchProviders.IN.flatrate && (
+                <>
+                  <Text style={styles.sectionTitle}>Streaming On</Text>
+                  <View style={styles.watchProvidersContainer}>
+                    {details.watchProviders.IN.flatrate?.map((provider) => {
+                      // Map of OTT direct URLs
+                      const ottUrls = {
+                        Netflix: "https://www.netflix.com/browse",
+                        "Amazon Prime Video": "https://www.primevideo.com",
+                        "Disney Plus": "https://www.hotstar.com",
+                        "Apple TV Plus": "https://tv.apple.com",
+                        Hulu: "https://www.hulu.com",
+                        "HBO Max": "https://www.hbomax.com",
+                      };
+                      return (
+                        <TouchableOpacity
+                          key={provider.provider_id}
+                          style={styles.providerItem}
+                          onPress={() => {
+                            const directUrl = ottUrls[provider.provider_name];
+                            const url =
+                              directUrl || details.watchProviders.IN.link;
+                            Linking.canOpenURL(url).then((supported) => {
+                              if (supported) {
+                                Linking.openURL(url);
+                              }
+                            });
+                          }}
+                        >
+                          <Image
+                            source={{
+                              uri: `https://image.tmdb.org/t/p/original${provider.logo_path}`,
+                            }}
+                            style={styles.providerLogo}
+                          />
+                          <Text style={styles.providerName}>
+                            {provider.provider_name}
+                          </Text>
+                          {details.watchProviders.IN.flatrate_price && (
+                            <Text style={styles.providerPrice}>
+                              ₹{details.watchProviders.IN.flatrate_price}/month
+                            </Text>
+                          )}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </>
+              )}
               {details.watchProviders.IN.rent && (
                 <View style={styles.rentSection}>
                   <Text style={styles.rentTitle}>Available for Rent</Text>
@@ -606,7 +618,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
               </View>
               <FlatList
                 data={details.similar.results
-                  .filter(movie => movie.vote_count)
+                  .filter((movie) => movie.vote_count)
                   .sort((a, b) => {
                     const dateA = new Date(a.vote_count);
                     const dateB = new Date(b.vote_count);
@@ -744,7 +756,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   genreTag: {
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.floats.primary,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 16,
@@ -753,7 +765,7 @@ const styles = StyleSheet.create({
   },
   genreText: {
     fontSize: 12,
-    color: colors.text.secondary,
+    color: colors.secondary,
   },
   section: {
     marginBottom: 24,
@@ -764,7 +776,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "600",
-    color: "white",
+    color: colors.secondary,
     marginBottom: 12,
   },
   overview: {
@@ -793,7 +805,7 @@ const styles = StyleSheet.create({
   crewName: {
     fontSize: 14,
     fontWeight: "500",
-    color: "white",
+    color: colors.secondary,
     marginBottom: 4,
   },
   crewJob: {
@@ -913,7 +925,7 @@ const styles = StyleSheet.create({
     // gap: 16,
   },
   providerItem: {
-    width: width / 3 - 24,
+    // width: width / 3 - 24,
     padding: 12,
     alignItems: "center",
     marginBottom: 16,
@@ -926,7 +938,7 @@ const styles = StyleSheet.create({
   },
   providerName: {
     fontSize: 12,
-    color: "white",
+    color: colors.secondary,
     textAlign: "center",
     // marginBottom: 4,
     fontWeight: "500",
@@ -943,7 +955,7 @@ const styles = StyleSheet.create({
   rentTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.primary,
+    color: colors.secondary,
     marginBottom: 12,
   },
   adultRatingContainer: {
@@ -1002,6 +1014,7 @@ const styles = StyleSheet.create({
   },
   playIcon: {
     opacity: 0.8,
+    color: colors.primary,
   },
   videoTitle: {
     position: "absolute",
@@ -1010,7 +1023,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 8,
     backgroundColor: "rgba(0,0,0,0.5)",
-    color: "white",
+    color: colors.secondary,
   },
   videoList: {
     paddingVertical: 8,
@@ -1044,9 +1057,10 @@ const styles = StyleSheet.create({
     marginTop: -40,
     marginLeft: -40,
     opacity: 0.8,
+    color: colors.primary,
   },
   primaryVideoTitle: {
-    color: "white",
+    color: colors.secondary,
     fontSize: 16,
     fontWeight: "600",
     textAlign: "center",
@@ -1093,7 +1107,7 @@ const styles = StyleSheet.create({
   },
   similarMovieTitle: {
     fontSize: 14,
-    color: "white",
+    color: colors.secondary,
     fontWeight: "500",
   },
   similarMovieRatingContainer: {

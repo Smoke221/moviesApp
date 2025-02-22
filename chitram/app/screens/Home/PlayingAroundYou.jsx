@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
+import colors from "@/app/theme/colors";
 
 const { width } = Dimensions.get("window");
 const API_URL = "http://10.0.18.177:8090/city-movies";
@@ -91,7 +92,7 @@ const PlayingAroundYou = ({ onResultsFetched }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerTitle}>In theaters around you</Text>
+      <Text style={styles.headerTitle}>What's Playing Near You</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   headerTitle: {
-    color: "white",
+    color: colors.primary,
     fontSize: 18,
     fontWeight: "bold",
     marginLeft: 15,
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
   },
   languageText: {
     backgroundColor: "rgba(0, 0, 0, 0.8)",
-    color: "white",
+    color: colors.secondary,
     fontSize: 10,
     paddingVertical: 3,
     paddingHorizontal: 6,
@@ -178,14 +179,14 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   ratingText: {
-    backgroundColor: "rgba(255, 215, 0, 0.9)",
+    backgroundColor: "#ff8e5d",
     fontSize: 11,
     paddingVertical: 3,
     paddingHorizontal: 6,
     borderRadius: 4,
     overflow: "hidden",
     fontWeight: "700",
-    color: "#000",
+    color: colors.secondary,
   },
   skeletonHeaderTitle: {
     width: 200,

@@ -127,7 +127,7 @@ const TrendingMovies = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>📺 Top Rated Series</Text>
+        <Text style={styles.title}>Best Rated Shows</Text>
         {/* <TouchableOpacity onPress={() => navigation.navigate('AllSeries')}>
           <Text style={styles.viewAll}>View All</Text>
         </TouchableOpacity> */}
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: colors.text.light,
+    color: colors.primary,
   },
   viewAll: {
     color: colors.primary,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   languageText: {
-    color: "#FFFFFF",
+    color: colors.secondary,
     fontSize: 8,
     fontWeight: "bold",
   },

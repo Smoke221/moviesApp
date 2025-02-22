@@ -45,11 +45,11 @@ const styles = StyleSheet.create({
   commentAuthor: {
     fontSize: 14,
     fontWeight: "bold",
-    color: colors.text.primary,
+    color: colors.primary,
   },
   commentText: {
     fontSize: 14,
-    color: colors.text.light,
+    color: colors.secondary,
   },
   commentDetails: {
     flexDirection: "row",
@@ -62,11 +62,11 @@ const styles = StyleSheet.create({
   showMoreButton: {
     marginTop: 10,
     padding: 5,
-    backgroundColor: colors.background.light,
+    backgroundColor: colors.background,
     borderRadius: 5,
   },
   showMoreText: {
-    color: colors.accent.link,
+    color: colors.floats.primary,
     fontSize: 14,
     textAlign: "center",
   },

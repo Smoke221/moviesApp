@@ -1,3 +1,4 @@
+import colors from "@/app/theme/colors";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
@@ -16,7 +17,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f7f7f7",
+    backgroundColor: colors.primary,
     padding: 20,
   },
   emoji: {
@@ -26,12 +27,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.secondary,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
+    color: colors.secondary,
     textAlign: "center",
   },
 });

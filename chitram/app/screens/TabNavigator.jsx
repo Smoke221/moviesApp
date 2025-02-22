@@ -12,6 +12,7 @@ import {
 import Feather from "react-native-vector-icons/Feather";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Entypo from "react-native-vector-icons/Entypo";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeStack from "../screens/Home/HomeStack";
 import NewsScreen from "../screens/News/NewsScreen";
@@ -85,13 +86,13 @@ const TabNavigator = () => {
     headerTitle: () => (
       <Text
         style={{
-          color: colors.accent.primary,
+          color: colors.primary,
           fontSize: 32,
           fontWeight: "700",
           fontFamily: "cursive",
-          textShadowColor: colors.primary,
+          textShadowColor: colors.secondary,
           textShadowOffset: { width: 1, height: 1 },
-          textShadowRadius: 2,
+          textShadowRadius: 1,
         }}
       >
         Chitram
@@ -118,10 +119,10 @@ const TabNavigator = () => {
         }}
       >
         <TouchableOpacity style={{ marginRight: 15 }}>
-          <Ionicons name="notifications-outline" size={24} color="white" />
+          <Ionicons name="notifications-outline" size={24} color={colors.secondary} />
         </TouchableOpacity>
         <TouchableOpacity>
-          <Feather name="message-square" size={24} color="white" />
+          <Feather name="message-square" size={24} color={colors.secondary} />
         </TouchableOpacity>
       </View>
     ),
@@ -178,9 +179,9 @@ const TabNavigator = () => {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: "white",
+          tabBarInactiveTintColor: colors.secondary,
           tabBarStyle: {
-            backgroundColor:"black",
+            backgroundColor:colors.background,
             borderTopWidth: 0,
             elevation: 8,
             shadowColor: colors.system.shadow,
@@ -195,7 +196,7 @@ const TabNavigator = () => {
           component={HomeStack}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="home" size={size} color={color} />
+              <Entypo name="home" size={size} color={color} />
             ),
             headerShown: true,
             ...CustomHeader(),
@@ -228,7 +229,7 @@ const TabNavigator = () => {
           component={SearchStack}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="movie-search" size={size} color={color} />
+              <Ionicons name="search" size={size} color={color} />
             ),
             headerShown: false,
           }}

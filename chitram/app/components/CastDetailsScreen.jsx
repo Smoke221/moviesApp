@@ -173,16 +173,6 @@ const CastDetailsScreen = ({ route, navigation }) => {
         )}
       </View>
 
-      {castDetails?.details?.homepage && (
-        <TouchableOpacity
-          style={styles.externalLinkButton}
-          onPress={() => Linking.openURL(castDetails.details.homepage)}
-        >
-          <Ionicons name="globe" size={20} color="white" />
-          <Text style={styles.externalLinkText}>Official Website</Text>
-        </TouchableOpacity>
-      )}
-
       <TouchableOpacity
         style={styles.externalLinkButton}
         onPress={openIMDbProfile}
@@ -198,7 +188,7 @@ const CastDetailsScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,

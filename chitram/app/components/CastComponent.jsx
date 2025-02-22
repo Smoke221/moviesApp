@@ -23,7 +23,7 @@ const CastComponent = ({ cast }) => {
           console.log("Cast image load error:", e.nativeEvent.error);
         }}
       />
-      <Text style={styles.castName} numberOfLines={2}>
+      <Text style={styles.castName} numberOfLines={1}>
         {item.name}
       </Text>
       <Text style={styles.castCharacter} numberOfLines={1}>
@@ -59,13 +59,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: 'white',
+    color: colors.secondary,
   },
   castItem: {
     marginRight: 10,
     alignItems: 'center',
     width: 100,
-    paddingHorizontal: 5,
+    // paddingHorizontal: 5,
   },
   castImage: {
     width: 100,
@@ -76,12 +76,13 @@ const styles = StyleSheet.create({
   castName: {
     fontSize: 14,
     fontWeight: '500',
-    color: 'white',
+    color: colors.secondary,
+    maxWidth: 100,
     textAlign: 'center',
   },
   castCharacter: {
     fontSize: 12,
-    color: 'gray',
+    color: colors.primary,
     textAlign: 'center',
   },
 });

@@ -20,16 +20,16 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     paddingLeft: 10,
     borderLeftWidth: 1,
-    borderLeftColor: colors.border.light,
+    borderLeftColor: colors.secondary,
   },
   commentAuthor: {
     fontSize: 14,
     fontWeight: "bold",
-    color: colors.text.primary,
+    color: colors.secondary,
   },
   commentText: {
     fontSize: 14,
-    color: colors.text.light,
+    color: colors.secondary,
   },
   commentDetails: {
     flexDirection: "row",
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 14,
-    color: colors.text.veryLight,
+    color: colors.secondary,
   },
 });
 

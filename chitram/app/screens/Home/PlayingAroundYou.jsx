@@ -15,7 +15,7 @@ import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 import colors from "@/app/theme/colors";
 
 const { width } = Dimensions.get("window");
-const API_URL = "http://10.0.18.177:8090/city-movies";
+const API_URL = "https://silky-kirstin-ismoketechlabs-adffa6e7.koyeb.app/city-movies";
 const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
 
 const PlayingAroundYou = ({ onResultsFetched }) => {

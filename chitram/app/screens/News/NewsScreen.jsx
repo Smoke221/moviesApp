@@ -22,7 +22,7 @@ const { width, height } = Dimensions.get('window');
 
 const fetchNews = async () => {
   try {
-    const response = await axios.get('http://10.0.18.177:8090/latest-articles', {
+    const response = await axios.get('https://silky-kirstin-ismoketechlabs-adffa6e7.koyeb.app/latest-articles', {
       timeout: 10000, // 10 seconds timeout
       headers: {
         'Accept': 'application/json',
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   readMoreButton: {
-    backgroundColor: '#ff8e5d',
+    backgroundColor: colors.floats.primary,
     paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 25,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   readMoreText: {
-    color: colors.background,
+    color: colors.secondary,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: colors.floats.primary,
     marginBottom: 10,
   },
   contentBox: {
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
   },
   content: {
     fontSize: 16,
-    color: '#FFFFFF',
+    color: colors.secondary,
     lineHeight: 24,
   },
   footer: {

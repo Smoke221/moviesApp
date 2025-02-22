@@ -29,7 +29,7 @@ const TrendingNews = () => {
   const fetchTrendingNews = async () => {
     try {
       const response = await axios.get(
-        "http://10.0.18.177:8090/latest-articles"
+        "https://silky-kirstin-ismoketechlabs-adffa6e7.koyeb.app/latest-articles"
       );
       if (response.data.articles && response.data.articles.length > 0) {
         const newsWithImage = response.data.articles.find(
